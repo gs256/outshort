@@ -1,0 +1,3 @@
+# Outshort
+
+Simple link shortener
