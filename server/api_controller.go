@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand/v2"
 	"net/http"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,9 +48,14 @@ func (this *ApiController) HandleShorten(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
 		return
 	}
+	originalUrl, urlValid := validateUrl(req.Url)
+	if !urlValid {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid url"})
+		return
+	}
 	for true {
 		alias := generateAlias()
-		_, err := this.storage.CreateLink(req.Url, alias)
+		_, err := this.storage.CreateLink(originalUrl, alias)
 		if err != nil && err.code == AliasAlreadyExists {
 			continue
 		}
@@ -73,4 +79,12 @@ func (this *ApiController) HandleRedirect(context *gin.Context) {
 		return
 	}
 	context.Redirect(http.StatusFound, location)
+}
+
+func validateUrl(sourceUrl string) (string, bool) {
+	parsed, err := url.ParseRequestURI(sourceUrl)
+	if err != nil {
+		return sourceUrl, false
+	}
+	return parsed.String(), true
 }
