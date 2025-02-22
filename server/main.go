@@ -4,10 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ShortenRequest struct {
-	Url string `json:"url"`
-}
-
 func main() {
 	router := gin.Default()
 
@@ -18,8 +14,9 @@ func main() {
 	apiController := ApiController{}
 	apiController.Initialize(&storage)
 
-	router.GET("/api/v1/test", apiController.HandleTestGet)
-	router.POST("/api/v1/shorten", apiController.HandleShortenPost)
+	router.GET("/api/v1/test", apiController.HandleTest)
+	router.POST("/api/v1/shorten", apiController.HandleShorten)
+	router.GET("/api/v1/redirect/:alias", apiController.HandleRedirect)
 
 	router.Run()
 }

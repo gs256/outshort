@@ -10,6 +10,7 @@ import (
 const (
 	AnyError           = 0
 	AliasAlreadyExists = 1
+	NotFound           = 2
 )
 
 type StorageError struct {
@@ -57,6 +58,19 @@ func (this *Storage) CreateLink(originalUrl string, alias string) (int64, *Stora
 		return -1, NewStorageError(AnyError, err.Error())
 	}
 	return id, nil
+}
+
+func (this *Storage) GetOriginalUrl(alias string) (string, *StorageError) {
+	var originalURL string
+	err := this.db.QueryRow("SELECT original_url FROM links WHERE alias = ? LIMIT 1", alias).Scan(&originalURL)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", NewStorageError(NotFound, fmt.Sprintf("No record with alias = '%s'", alias))
+		} else {
+			return "", NewStorageError(AnyError, err.Error())
+		}
+	}
+	return originalURL, nil
 }
 
 func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {

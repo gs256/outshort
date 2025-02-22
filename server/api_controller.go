@@ -10,6 +10,10 @@ import (
 const AliasLength = 5
 const AliasAlphabet string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+type ShortenRequest struct {
+	Url string `json:"url"`
+}
+
 func generateAlias() string {
 	result := ""
 	for i := 0; i < AliasLength; i++ {
@@ -31,13 +35,13 @@ func (this *ApiController) Initialize(storage *Storage) {
 	this.storage = storage
 }
 
-func (this *ApiController) HandleTestGet(context *gin.Context) {
+func (this *ApiController) HandleTest(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{
-		"message": "pong",
+		"message": "test",
 	})
 }
 
-func (this *ApiController) HandleShortenPost(context *gin.Context) {
+func (this *ApiController) HandleShorten(context *gin.Context) {
 	var req ShortenRequest
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
@@ -52,4 +56,21 @@ func (this *ApiController) HandleShortenPost(context *gin.Context) {
 		context.JSON(http.StatusAccepted, gin.H{"alias": alias})
 		break
 	}
+}
+
+func (this *ApiController) HandleRedirect(context *gin.Context) {
+	alias := context.Param("alias")
+	if alias == "" {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Alias parameter required"})
+	}
+	location, err := this.storage.GetOriginalUrl(alias)
+	if err != nil {
+		if err.code == NotFound {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "Alias not found"})
+		} else {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		}
+		return
+	}
+	context.Redirect(http.StatusFound, location)
 }
