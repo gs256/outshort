@@ -1,11 +1,13 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	storage := Storage{}
 	storage.Initialize()
@@ -18,5 +20,5 @@ func main() {
 	router.POST("/api/v1/shorten", apiController.HandleShorten)
 	router.GET("/api/v1/redirect/:alias", apiController.HandleRedirect)
 
-	router.Run()
+	router.Run(":8249")
 }
