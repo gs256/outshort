@@ -12,13 +12,20 @@
   <div class="input-container">
     <label for="url-input">Enter your url here</label>
     <div>
-      <input id="url-input" type="text" />
-      <button (click)="onShortenClicked()">Shorten</button>
+      <input id="url-input" type="text" [(ngModel)]="originalUrl" />
+      <button (click)="onShortenClicked()" [disabled]="processing()">
+        Shorten
+      </button>
     </div>
   </div>
   <br />
   <div class="input-container">
     <label for="short-url">Short url</label>
-    <input id="short-url" type="text" />
+    <input
+      id="short-url"
+      type="text"
+      [(ngModel)]="shortLink"
+      [style]="{ width: '16rem' }"
+    />
   </div>
 </div>
