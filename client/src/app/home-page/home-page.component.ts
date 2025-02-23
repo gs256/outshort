@@ -11,11 +11,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomePageComponent {
   private readonly api = inject(ApiService);
-
   public readonly processing = signal(false);
-
   public readonly shortLink = signal('');
-
   public readonly originalUrl = signal('');
 
   public onShortenClicked() {
