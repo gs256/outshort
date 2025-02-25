@@ -1,4 +1,5 @@
 <div class="container">
+  <p-menubar [model]="menuItems" />
   <h1>Outshort</h1>
   <p>
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio aliquam ut,
@@ -27,5 +28,9 @@
       [(ngModel)]="shortLink"
       [style]="{ width: '16rem' }"
     />
+  </div>
+  <br />
+  <div class="card flex justify-center">
+    <p-button label="Check" />
   </div>
 </div>

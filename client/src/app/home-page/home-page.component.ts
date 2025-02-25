@@ -2,10 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../services/api/api.service';
 import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { MenubarModule } from 'primeng/menubar';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-home-page',
-  imports: [FormsModule],
+  imports: [FormsModule, ButtonModule, MenubarModule],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
 })
@@ -14,6 +17,29 @@ export class HomePageComponent {
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
   public readonly originalUrl = signal('');
+  public readonly menuItems: MenuItem[] = [
+    {
+      label: 'Home',
+      icon: 'pi pi-home',
+      command: () => {
+        console.log('Home');
+      },
+    },
+    {
+      label: 'Dashboard',
+      icon: 'pi pi-list',
+      command: () => {
+        console.log('Dashboard');
+      },
+    },
+    {
+      label: 'About',
+      icon: 'pi pi-info-circle',
+      command: () => {
+        console.log('About');
+      },
+    },
+  ];
 
   public onShortenClicked() {
     if (this.processing()) {
