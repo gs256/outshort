@@ -5,10 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-home-page',
-  imports: [FormsModule, ButtonModule, MenubarModule],
+  imports: [FormsModule, ButtonModule, MenubarModule, CardModule],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
 })

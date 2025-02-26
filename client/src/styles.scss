@@ -1,9 +1,7 @@
 @import "primeicons/primeicons.css";
+@import "reset.css";
 
-body {
-  padding: 0;
-  margin: 0;
-}
+@layer reset, primeng;
 
 * {
   font-family: "Manrope", sans-serif;
