@@ -1,24 +1,23 @@
 <div class="container">
-  <p-menubar [model]="menuItems" />
-  <p-card header="Simple Card">
-    <p class="m-0">Lorem ipsum dolor sit amet...</p>
+  <p-menubar [model]="menuItems">
+    <ng-template #start>
+      <span class="logo">Outshort</span>
+    </ng-template>
+  </p-menubar>
+  <p-card header="Outshort" class="intro-card">
+    <p class="m-0">
+      Outshort is a simple, open-source, self-hosted URL shortener that makes
+      long links short, clean, and easy to share. Customize links, track clicks,
+      and stay in control of your data!
+    </p>
     <ng-template #footer>
       <div class="flex gap-4 mt-1">
-        <p-button
-          label="Cancel"
-          severity="secondary"
-          class="w-full"
-          [outlined]="true"
-          styleClass="w-full"
-        />
-        <p-button label="Save" class="w-full" styleClass="w-full" />
+        <p-button label="Sign in" class="w-full" styleClass="w-full" />
       </div>
     </ng-template>
   </p-card>
   <h1>Outshort</h1>
   <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio aliquam ut,
-    alias iusto ullam eligendi mollitia unde. Sint explicabo maxime temporibus
     dolor culpa sed debitis quibusdam non, excepturi, ea consequatur natus
     facilis mollitia tempore itaque pariatur sit, aperiam perferendis
     repudiandae odit nulla adipisci assumenda eos fuga! Officiis dolore debitis

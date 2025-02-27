@@ -2,11 +2,23 @@
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  background-color: var(--p-slate-100);
+
+  --p-menubar-background: white;
+  --p-card-title-font-weight: 600;
 
   .container {
     width: 700px;
-    background-color: lightgray;
     padding: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo {
+    font-weight: 800;
+    color: var(--p-orange-500);
+    margin-right: 1rem;
   }
 
   .input-container {
