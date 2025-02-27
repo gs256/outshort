@@ -4,10 +4,13 @@ import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-home-page',
@@ -18,12 +21,18 @@ import { TabsModule } from 'primeng/tabs';
     CardModule,
     InputTextModule,
     TabsModule,
+    ClipboardModule,
+    ToastModule,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
+  providers: [MessageService],
 })
 export class HomePageComponent {
-  private readonly api = inject(ApiService);
+  private readonly _api = inject(ApiService);
+  private readonly _clipboard = inject(Clipboard);
+  private readonly _messageService = inject(MessageService);
+
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
   public readonly originalUrl = signal('');
@@ -60,7 +69,7 @@ export class HomePageComponent {
       return;
     }
     this.processing.set(true);
-    this.api
+    this._api
       .shorten(this.originalUrl())
       .pipe(
         finalize(() => {
@@ -75,6 +84,18 @@ export class HomePageComponent {
           alert(error.message);
         },
       });
+  }
+
+  public copyShortLink() {
+    if (this.shortLink().length === 0) {
+      return;
+    }
+    this._clipboard.copy(this.shortLink());
+    this._messageService.add({
+      summary: 'Copied to clipboard',
+      detail: this.shortLink(),
+      severity: 'success',
+    });
   }
 
   private getShortUrl(alias: string) {

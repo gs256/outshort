@@ -40,7 +40,7 @@
     </div>
   </p-card>
 
-  @if (shortLink().trim().length > 0) {
+  @if (true) {
   <p-card header="Short link">
     <p-tabs value="0">
       <p-tablist>
@@ -53,11 +53,19 @@
             Here's your short link. You can share it anywhere.
           </p>
           <div class="flex flex-row gap-2 mt-3">
-            <input pInputText [(ngModel)]="shortLink" [readOnly]="true" />
+            <input
+              pInputText
+              [(ngModel)]="shortLink"
+              [readOnly]="true"
+              [disabled]="shortLink().length === 0"
+            />
+            <p-toast />
             <p-button
               icon="pi pi-clone"
               severity="success"
               label="Copy"
+              (onClick)="copyShortLink()"
+              [disabled]="shortLink().length === 0"
             ></p-button>
           </div>
         </p-tabpanel>
