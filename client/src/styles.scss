@@ -1,6 +1,10 @@
 @import "primeicons/primeicons.css";
 @import "reset.css";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer reset, primeng;
 
 * {
