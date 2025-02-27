@@ -6,10 +6,19 @@ import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
 import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-home-page',
-  imports: [FormsModule, ButtonModule, MenubarModule, CardModule],
+  imports: [
+    FormsModule,
+    ButtonModule,
+    MenubarModule,
+    CardModule,
+    InputTextModule,
+    TabsModule,
+  ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
 })
