@@ -6,7 +6,12 @@
       </a>
     </ng-template>
     <ng-template #end>
-      <p-button label="Sign up" variant="outlined" size="small" />
+      <p-button
+        label="Sign up"
+        variant="outlined"
+        size="small"
+        (onClick)="navigateAuth()"
+      />
     </ng-template>
   </p-menubar>
   <p-card header="Welcome to Outshort!" class="intro-card">
@@ -17,7 +22,7 @@
     </p>
     <ng-template #footer>
       <div class="flex items-center gap-4 mt-1 text-muted-color">
-        <p-button label="Sign up" />
+        <p-button label="Sign up" (onClick)="navigateAuth()" />
         <span>Sign up and manage your links</span>
       </div>
     </ng-template>
@@ -43,64 +48,64 @@
   </p-card>
 
   @if (true) {
-  <p-card header="Short link" class="relative">
-    @if (!shortened()) {
-    <div
-      class="bg-white/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
-    ></div>
-    }
-    <p-tabs value="0">
-      <p-tablist>
-        <p-tab value="0">Last</p-tab>
-        <p-tab value="1">History</p-tab>
-      </p-tablist>
-      <p-tabpanels class="p-5">
-        <p-tabpanel value="0" class="p-0 m-0">
-          <p class="m-0 text-secondary text-muted-color">
-            Here's your short link. You can share it anywhere.
-          </p>
-          <div class="flex flex-row gap-2 mt-3">
-            <input
-              pInputText
-              [(ngModel)]="shortLink"
-              [readOnly]="true"
-              [disabled]="!shortened()"
-            />
-            <p-toast />
-            <p-button
-              icon="pi pi-clone"
-              severity="success"
-              label="Copy"
-              (onClick)="copyShortLink()"
-              [disabled]="!shortened()"
-            ></p-button>
-          </div>
-        </p-tabpanel>
-        <p-tabpanel value="1">
-          <p-table [value]="history()">
-            <ng-template #header>
-              <tr>
-                <th>Original</th>
-                <th>Short</th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-record>
-              <!-- prettier-ignore -->
-              @let original = record.original;
-              @let short = getShortUrl(record.alias);
-              <tr>
-                <td>
-                  <a [href]="original">{{ original }}</a>
-                </td>
-                <td>
-                  <a [href]="short">{{ short }}</a>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-tabpanel>
-      </p-tabpanels>
-    </p-tabs>
-  </p-card>
+    <p-card header="Short link" class="relative">
+      @if (!shortened()) {
+        <div
+          class="bg-white/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
+        ></div>
+      }
+      <p-tabs value="0">
+        <p-tablist>
+          <p-tab value="0">Last</p-tab>
+          <p-tab value="1">History</p-tab>
+        </p-tablist>
+        <p-tabpanels class="p-5">
+          <p-tabpanel value="0" class="p-0 m-0">
+            <p class="m-0 text-secondary text-muted-color">
+              Here's your short link. You can share it anywhere.
+            </p>
+            <div class="flex flex-row gap-2 mt-3">
+              <input
+                pInputText
+                [(ngModel)]="shortLink"
+                [readOnly]="true"
+                [disabled]="!shortened()"
+              />
+
+              <p-toast />
+              <p-button
+                icon="pi pi-clone"
+                severity="success"
+                label="Copy"
+                (onClick)="copyShortLink()"
+                [disabled]="!shortened()"
+              ></p-button>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="1">
+            <p-table [value]="history()">
+              <ng-template #header>
+                <tr>
+                  <th>Original</th>
+                  <th>Short</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-record>
+                @let original = record.original;
+                @let short = getShortUrl(record.alias);
+                <tr>
+                  <td>
+                    <a [href]="original">{{ original }}</a>
+                  </td>
+                  <td>
+                    <a [href]="short">{{ short }}</a>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </p-card>
   }
 </div>

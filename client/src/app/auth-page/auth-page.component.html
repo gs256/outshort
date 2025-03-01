@@ -1,0 +1,48 @@
+<div class="container flex items-center justify-center bg-slate-100">
+  <div class="flex flex-col gap-4">
+    <p-card
+      class="relative"
+      [header]="formType() === 'sign-up' ? 'Sign up' : 'Sign in'"
+    >
+      <ng-template #subtitle>
+        {{ formType() === "sign-up" ? "Create a new account" : "Welcome back" }}
+      </ng-template>
+      <div class="flex flex-col gap-2 my-3">
+        <div class="flex flex-col gap-1">
+          <label for="username">Username</label>
+          <input pInputText id="username" placeholder="John_123" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="password">Password</label>
+          <input pInputText id="password" type="password" placeholder="●●●●" />
+        </div>
+        @if (formType() === "sign-up") {
+          <div class="flex flex-col gap-1">
+            <label for="repeat">Repeat password</label>
+            <input pInputText id="repeat" type="password" placeholder="●●●●" />
+          </div>
+        }
+      </div>
+      <ng-template #footer>
+        <div class="mt-2">
+          @if (formType() === "sign-up") {
+            <p-button label="Sign up" />
+          } @else if (formType() === "sign-in") {
+            <p-button severity="success" label="Sign in" />
+          }
+        </div>
+      </ng-template>
+    </p-card>
+    <div class="flex justify-center underline text-primary">
+      @if (formType() === "sign-up") {
+        <a [routerLink]="'.'" [queryParams]="{ type: 'sign-in' }"
+          >Already have an account?</a
+        >
+      } @else if (formType() === "sign-in") {
+        <a [routerLink]="'.'" [queryParams]="{ type: 'sign-up' }"
+          >Don't have an account?</a
+        >
+      }
+    </div>
+  </div>
+</div>

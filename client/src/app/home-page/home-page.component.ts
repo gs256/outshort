@@ -13,7 +13,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastModule } from 'primeng/toast';
 import { absoluteRoute } from '../utils';
 import { ROUTES } from '../constants';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
 
@@ -40,6 +40,7 @@ export class HomePageComponent {
   private readonly _clipboard = inject(Clipboard);
   private readonly _messageService = inject(MessageService);
   private readonly _historyService = inject(ShortLinkHistoryService);
+  private readonly _router = inject(Router);
 
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
@@ -110,5 +111,9 @@ export class HomePageComponent {
 
   public getShortUrl(alias: string) {
     return `${window.location.origin}/${alias}`;
+  }
+
+  public navigateAuth() {
+    this._router.navigate([ROUTES.auth]);
   }
 }

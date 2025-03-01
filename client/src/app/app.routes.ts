@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './home-page/home-page.component';
 import { RedirectComponent } from './redirect/redirect.component';
 import { ROUTES } from './constants';
+import { AuthPageComponent } from './auth-page/auth-page.component';
 
 export const routes: Routes = [
   {
@@ -23,7 +24,7 @@ export const routes: Routes = [
   },
   {
     path: ROUTES.auth,
-    component: HomePageComponent,
+    component: AuthPageComponent,
   },
   {
     path: ':alias',
