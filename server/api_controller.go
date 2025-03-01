@@ -120,9 +120,9 @@ func (this *ApiController) HandleSignIn(context *gin.Context) {
 	userId, err := this.storage.AuthenticateUser(username, password)
 	if err != nil {
 		if err.code == InvalidCredentials {
-			context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials"})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		} else if err.code == NotFound {
-			context.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		} else {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		}

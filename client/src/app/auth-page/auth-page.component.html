@@ -7,28 +7,52 @@
       <ng-template #subtitle>
         {{ formType() === "sign-up" ? "Create a new account" : "Welcome back" }}
       </ng-template>
-      <div class="flex flex-col gap-2 my-3">
-        <div class="flex flex-col gap-1">
-          <label for="username">Username</label>
-          <input pInputText id="username" placeholder="John_123" />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label for="password">Password</label>
-          <input pInputText id="password" type="password" placeholder="●●●●" />
-        </div>
-        @if (formType() === "sign-up") {
+      <form [formGroup]="form">
+        <div class="flex flex-col gap-2 my-3">
           <div class="flex flex-col gap-1">
-            <label for="repeat">Repeat password</label>
-            <input pInputText id="repeat" type="password" placeholder="●●●●" />
+            <label for="username">Username</label>
+            <input
+              pInputText
+              id="username"
+              placeholder="John_123"
+              formControlName="username"
+            />
           </div>
-        }
-      </div>
+          <div class="flex flex-col gap-1">
+            <label for="password">Password</label>
+            <input
+              pInputText
+              id="password"
+              type="password"
+              placeholder="●●●●"
+              formControlName="password"
+            />
+          </div>
+          @if (formType() === "sign-up") {
+            <div class="flex flex-col gap-1">
+              <label for="repeat">Repeat password</label>
+              <input
+                pInputText
+                id="repeat"
+                type="password"
+                placeholder="●●●●"
+                formControlName="repeat"
+              />
+            </div>
+          }
+        </div>
+      </form>
       <ng-template #footer>
         <div class="mt-2">
           @if (formType() === "sign-up") {
-            <p-button label="Sign up" />
+            <p-button label="Sign up" [disabled]="!formValid()" />
           } @else if (formType() === "sign-in") {
-            <p-button severity="success" label="Sign in" />
+            <p-button
+              severity="success"
+              label="Sign in"
+              (onClick)="onSignIn()"
+              [disabled]="!formValid()"
+            />
           }
         </div>
       </ng-template>

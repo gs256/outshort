@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable } from 'rxjs';
 import { API_URL } from '../../constants';
+import { getErrorResponseMessage } from '../../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ export class ApiService {
   public shorten(url: string): Observable<string> {
     return this.http.post(`${API_URL}/api/v1/shorten`, { url: url }).pipe(
       catchError((error: HttpErrorResponse) => {
-        const message = this.getErrorResponseMessage(error);
+        const message = getErrorResponseMessage(error);
         if (message) throw new Error(message);
         throw new Error('Unknown error occured');
       }),
@@ -33,18 +34,5 @@ export class ApiService {
           throw error;
         }),
       );
-  }
-
-  private getErrorResponseMessage(
-    error: HttpErrorResponse,
-  ): string | undefined {
-    if (error.status == 0) {
-      return undefined;
-    }
-    const errorBody = error.error;
-    if ('error' in errorBody && typeof errorBody['error'] == 'string') {
-      return errorBody['error'] as string;
-    }
-    return undefined;
   }
 }
