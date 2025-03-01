@@ -22,6 +22,11 @@ type SignUpRequest struct {
 	Password string `json:"password"`
 }
 
+type SignInRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func randomString(length int) string {
 	result := ""
 	for range length {
@@ -101,6 +106,35 @@ func (this *ApiController) HandleRedirect(context *gin.Context) {
 }
 
 func (this *ApiController) HandleSignIn(context *gin.Context) {
+	var req SignInRequest
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
+		return
+	}
+	username := strings.TrimSpace(req.Username)
+	password := strings.TrimSpace(req.Password)
+	if len(username) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
+		return
+	}
+	userId, err := this.storage.AuthenticateUser(username, password)
+	if err != nil {
+		if err.code == InvalidCredentials {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials"})
+		} else if err.code == NotFound {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		} else {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		}
+		return
+	}
+	authToken := generateAuthToken()
+	err = this.storage.CreateAuthToken(authToken, userId, AuthTokenLifetimeSec)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusAccepted, gin.H{"authToken": authToken})
 }
 
 func (this *ApiController) HandleSignUp(context *gin.Context) {

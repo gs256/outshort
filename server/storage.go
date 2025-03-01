@@ -10,14 +10,21 @@ import (
 )
 
 const (
-	AnyError        = 0
-	UniqueViolation = 1
-	NotFound        = 2
+	AnyError           = 0
+	UniqueViolation    = 1
+	NotFound           = 2
+	InvalidCredentials = 3
 )
 
 type StorageError struct {
 	code    int
 	message string
+}
+
+type UserModel struct {
+	Id       int64
+	Username string
+	Password string
 }
 
 func NewStorageError(code int, message string) *StorageError {
@@ -97,6 +104,21 @@ func (this *Storage) CreateAuthToken(token string, userId int64, lifetimeSec int
 		return NewStorageError(AnyError, "Failed to create auth token")
 	}
 	return nil
+}
+
+func (this *Storage) AuthenticateUser(username string, password string) (int64, *StorageError) {
+	var user UserModel
+	err := this.db.QueryRow("SELECT id, username, password FROM users WHERE username = ? LIMIT 1", username).Scan(&user.Id, &user.Username, &user.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return -1, NewStorageError(NotFound, "User not found")
+		}
+		return -1, NewStorageError(AnyError, "Unknown error")
+	}
+	if user.Password == password {
+		return user.Id, nil
+	}
+	return -1, NewStorageError(InvalidCredentials, "Invalid credentials")
 }
 
 func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {
