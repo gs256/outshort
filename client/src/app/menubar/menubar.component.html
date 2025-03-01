@@ -1,0 +1,15 @@
+<p-menubar [model]="menuItems">
+  <ng-template #start>
+    <a [routerLink]="'/'">
+      <span class="logo text-lg">Outshort</span>
+    </a>
+  </ng-template>
+  <ng-template #end>
+    <p-button
+      label="Sign up"
+      variant="outlined"
+      size="small"
+      (onClick)="navigateAuth()"
+    />
+  </ng-template>
+</p-menubar>

@@ -1,19 +1,5 @@
-<div class="container">
-  <p-menubar [model]="menuItems">
-    <ng-template #start>
-      <a [routerLink]="'/'">
-        <span class="logo text-lg">Outshort</span>
-      </a>
-    </ng-template>
-    <ng-template #end>
-      <p-button
-        label="Sign up"
-        variant="outlined"
-        size="small"
-        (onClick)="navigateAuth()"
-      />
-    </ng-template>
-  </p-menubar>
+<app-page-wrapper>
+  <app-menubar></app-menubar>
   <p-card header="Welcome to Outshort!" class="intro-card">
     <p class="m-0">
       Outshort is a simple, open-source, self-hosted URL shortener that makes
@@ -108,4 +94,4 @@
       </p-tabs>
     </p-card>
   }
-</div>
+</app-page-wrapper>

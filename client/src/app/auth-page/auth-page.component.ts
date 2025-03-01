@@ -37,6 +37,7 @@ export class AuthPageComponent {
     if (typeParam !== 'sign-in' && typeParam !== 'sign-up') {
       this._router.navigate([], {
         relativeTo: this._route,
+        replaceUrl: true,
         queryParams: { type: DEFAULT_TYPE },
         queryParamsHandling: 'merge',
       });

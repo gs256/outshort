@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--p-slate-100);
+
+  .page-wrapper {
+    width: 700px;
+    padding: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+}

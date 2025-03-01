@@ -4,18 +4,19 @@ import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
-import { MenuItem, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabsModule } from 'primeng/tabs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastModule } from 'primeng/toast';
-import { absoluteRoute } from '../utils';
 import { ROUTES } from '../constants';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
+import { MenubarComponent } from '../menubar/menubar.component';
+import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
 
 @Component({
   selector: 'app-home-page',
@@ -28,8 +29,9 @@ import { TableModule } from 'primeng/table';
     TabsModule,
     ClipboardModule,
     ToastModule,
-    RouterLink,
     TableModule,
+    MenubarComponent,
+    PageWrapperComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
@@ -48,26 +50,8 @@ export class HomePageComponent {
   public readonly history = this._historyService.records;
 
   public readonly shortened = computed(
-    () => this.shortLink().trim().length > 0
+    () => this.shortLink().trim().length > 0,
   );
-
-  public readonly menuItems: MenuItem[] = [
-    {
-      label: 'Home',
-      icon: 'pi pi-home',
-      routerLink: absoluteRoute(ROUTES.home),
-    },
-    {
-      label: 'Dashboard',
-      icon: 'pi pi-list',
-      routerLink: absoluteRoute(ROUTES.dashboard),
-    },
-    {
-      label: 'About',
-      icon: 'pi pi-info-circle',
-      routerLink: absoluteRoute(ROUTES.about),
-    },
-  ];
 
   public onShortenClicked() {
     if (this.processing()) {
@@ -84,7 +68,7 @@ export class HomePageComponent {
       .pipe(
         finalize(() => {
           this.processing.set(false);
-        })
+        }),
       )
       .subscribe({
         next: (alias) => {
