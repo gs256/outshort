@@ -3,6 +3,8 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { RedirectComponent } from './redirect/redirect.component';
 import { ROUTES } from './constants';
 import { AuthPageComponent } from './auth-page/auth-page.component';
+import { DashboardPageComponent } from './dashboard-page/dashboard-page.component';
+import { AboutPageComponent } from './about-page/about-page.component';
 
 export const routes: Routes = [
   {
@@ -16,11 +18,11 @@ export const routes: Routes = [
   },
   {
     path: ROUTES.dashboard,
-    component: HomePageComponent,
+    component: DashboardPageComponent,
   },
   {
     path: ROUTES.about,
-    component: HomePageComponent,
+    component: AboutPageComponent,
   },
   {
     path: ROUTES.auth,
