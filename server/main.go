@@ -21,6 +21,7 @@ func main() {
 	router.GET("/api/v1/redirect/:alias", apiController.HandleRedirect)
 	router.POST("/api/v1/auth/sign-in", apiController.HandleSignIn)
 	router.POST("/api/v1/auth/sign-up", apiController.HandleSignUp)
+	router.GET("/api/v1/auth/user-info", apiController.HandleGetUserInfo)
 
 	router.Run(":8249")
 }

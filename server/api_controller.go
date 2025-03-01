@@ -171,3 +171,25 @@ func (this *ApiController) HandleSignUp(context *gin.Context) {
 	}
 	context.JSON(http.StatusAccepted, gin.H{"authToken": authToken})
 }
+
+func (this *ApiController) HandleGetUserInfo(context *gin.Context) {
+	authHeader := context.GetHeader("Authorization")
+	split := strings.Split(authHeader, " ")
+	if len(split) != 2 {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	if strings.ToLower(split[0]) != "bearer" {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	token := strings.TrimSpace(split[1])
+	user, err := this.storage.GetUserInfo(token)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{
+		"username": user.Username,
+	})
+}
