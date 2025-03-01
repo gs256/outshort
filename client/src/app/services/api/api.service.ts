@@ -21,7 +21,7 @@ export class ApiService {
           return res['alias'] as string;
         }
         throw new Error('Invalid response from server');
-      })
+      }),
     );
   }
 
@@ -31,12 +31,12 @@ export class ApiService {
       .pipe(
         catchError((error) => {
           throw error;
-        })
+        }),
       );
   }
 
   private getErrorResponseMessage(
-    error: HttpErrorResponse
+    error: HttpErrorResponse,
   ): string | undefined {
     if (error.status == 0) {
       return undefined;

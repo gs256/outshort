@@ -1,6 +1,8 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-    username TEXT UNIQUE NOT NULL
+    username TEXT UNIQUE NOT NULL,
+    -- FIXME!
+    password TEXT NOT NULL
 );
 
 CREATE TABLE auth_tokens (

@@ -2,15 +2,17 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
+	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
-	AnyError           = 0
-	AliasAlreadyExists = 1
-	NotFound           = 2
+	AnyError        = 0
+	UniqueViolation = 1
+	NotFound        = 2
 )
 
 type StorageError struct {
@@ -50,7 +52,7 @@ func (this *Storage) CreateLink(originalUrl string, alias string) (int64, *Stora
 		return -1, NewStorageError(AnyError, err.Error())
 	}
 	if alreadyExists {
-		return -1, NewStorageError(AliasAlreadyExists, fmt.Sprintf("link with alias '%s' already exists", alias))
+		return -1, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
 
 	id, err := insertLink(this.db, originalUrl, alias)
@@ -71,6 +73,30 @@ func (this *Storage) GetOriginalUrl(alias string) (string, *StorageError) {
 		}
 	}
 	return originalURL, nil
+}
+
+func (this *Storage) CreateUser(username string, password string) (int64, *StorageError) {
+	res, err := this.db.Exec("INSERT INTO users (username, password) VALUES(?, ?)", username, password)
+	if err != nil {
+		var sqliteErr sqlite3.Error
+		if errors.As(err, &sqliteErr) && sqliteErr.Code == sqlite3.ErrConstraint {
+			return -1, NewStorageError(UniqueViolation, fmt.Sprintf("Username is already taken"))
+		}
+		return -1, NewStorageError(AnyError, "Failed to create user")
+	}
+	var id int64
+	if id, err = res.LastInsertId(); err != nil {
+		return -1, NewStorageError(AnyError, "Failed to get user id")
+	}
+	return id, nil
+}
+
+func (this *Storage) CreateAuthToken(token string, userId int64, lifetimeSec int) *StorageError {
+	_, err := this.db.Exec("INSERT INTO auth_tokens (token, user_id, lifetime_sec) VALUES(?, ?, ?)", token, userId, lifetimeSec)
+	if err != nil {
+		return NewStorageError(AnyError, "Failed to create auth token")
+	}
+	return nil
 }
 
 func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {

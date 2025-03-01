@@ -4,28 +4,47 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 const AliasLength = 5
-const AliasAlphabet string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const StringGenerationAlphabet string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const AuthTokenLifetimeSec = 1 * 60 * 60
 
 type ShortenRequest struct {
 	Url string `json:"url"`
 }
 
-func generateAlias() string {
+type SignUpRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func randomString(length int) string {
 	result := ""
-	for i := 0; i < AliasLength; i++ {
-		randomIndex := randRange(0, len(AliasAlphabet)-1)
-		result += string(AliasAlphabet[randomIndex])
+	for range length {
+		randomIndex := randRange(0, len(StringGenerationAlphabet)-1)
+		result += string(StringGenerationAlphabet[randomIndex])
 	}
 	return result
 }
 
 func randRange(min int, max int) int {
 	return rand.IntN(max-min) + min
+}
+
+func validateUrl(sourceUrl string) (string, bool) {
+	parsed, err := url.ParseRequestURI(sourceUrl)
+	if err != nil {
+		return sourceUrl, false
+	}
+	return parsed.String(), true
+}
+
+func generateAuthToken() string {
+	return randomString(32)
 }
 
 type ApiController struct {
@@ -54,9 +73,9 @@ func (this *ApiController) HandleShorten(context *gin.Context) {
 		return
 	}
 	for true {
-		alias := generateAlias()
+		alias := randomString(AliasLength)
 		_, err := this.storage.CreateLink(originalUrl, alias)
-		if err != nil && err.code == AliasAlreadyExists {
+		if err != nil && err.code == UniqueViolation {
 			continue
 		}
 		context.JSON(http.StatusAccepted, gin.H{"alias": alias})
@@ -81,10 +100,40 @@ func (this *ApiController) HandleRedirect(context *gin.Context) {
 	context.Redirect(http.StatusFound, location)
 }
 
-func validateUrl(sourceUrl string) (string, bool) {
-	parsed, err := url.ParseRequestURI(sourceUrl)
-	if err != nil {
-		return sourceUrl, false
+func (this *ApiController) HandleSignIn(context *gin.Context) {
+}
+
+func (this *ApiController) HandleSignUp(context *gin.Context) {
+	var req SignUpRequest
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
+		return
 	}
-	return parsed.String(), true
+	username := strings.TrimSpace(req.Username)
+	password := strings.TrimSpace(req.Password)
+	if len(username) < 2 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Username must be at least 2 characters"})
+		return
+	}
+	if len(password) < 6 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Password must be at least 6 characters"})
+		return
+	}
+	userId, err := this.storage.CreateUser(username, password)
+	if err != nil {
+		if err.code == UniqueViolation {
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		} else {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	authToken := generateAuthToken()
+	err = this.storage.CreateAuthToken(authToken, userId, AuthTokenLifetimeSec)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusAccepted, gin.H{"authToken": authToken})
 }
