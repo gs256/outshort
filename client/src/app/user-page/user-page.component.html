@@ -1,7 +1,7 @@
 <app-page-wrapper>
   <app-menubar></app-menubar>
   @if (user() !== undefined) {
-    <p-card [header]="'Hi, ' + user()?.username" class="intro-card">
+    <p-card [header]="'Hi, ' + user()?.username">
       <div class="pt-6 flex gap-6">
         <div
           class="bg-slate-300 rounded-full flex items-center justify-center text-white text-2xl"

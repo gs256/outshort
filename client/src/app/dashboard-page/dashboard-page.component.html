@@ -1,4 +1,22 @@
 <app-page-wrapper>
   <app-menubar></app-menubar>
-  <span>TODO: dashboard</span>
+  @if (user() === undefined) {
+    <p-card header="Dashboard">
+      <p class="m-0 text-muted-color">
+        You have to sign in to get acess to the dashboard
+      </p>
+      <ng-template #footer>
+        <div class="flex items-center gap-4 mt-1 text-muted-color">
+          <p-button
+            label="Sign in"
+            severity="success"
+            (onClick)="navigateSignIn()"
+          />
+          <p-button label="Sign up" (onClick)="navigateSignUp()" />
+        </div>
+      </ng-template>
+    </p-card>
+  } @else {
+    <p>TODO: dashboard</p>
+  }
 </app-page-wrapper>

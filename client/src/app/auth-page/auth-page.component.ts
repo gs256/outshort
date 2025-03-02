@@ -99,6 +99,10 @@ export class AuthPageComponent {
     return params['type'];
   }
 
+  private getRedirectParam(params: Params) {
+    return params['redirect'];
+  }
+
   public onSignIn() {
     const formValue = this.form.getRawValue();
     this._userStore.signIn({
