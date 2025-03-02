@@ -7,7 +7,11 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowHeaders:     []string{"Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"},
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+	}))
 
 	storage := Storage{}
 	storage.Initialize()

@@ -5,15 +5,21 @@ import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { absoluteRoute } from '../utils';
 import { ROUTES } from '../constants';
+import { UserStore } from '../store/user.store';
+import { ChipModule } from 'primeng/chip';
 
 @Component({
   selector: 'app-menubar',
-  imports: [MenubarModule, RouterLink, ButtonModule],
+  imports: [MenubarModule, RouterLink, ButtonModule, ChipModule],
   templateUrl: './menubar.component.html',
   styleUrl: './menubar.component.scss',
 })
 export class MenubarComponent {
   private readonly _router = inject(Router);
+  private readonly _userStore = inject(UserStore);
+
+  public readonly loading = this._userStore.isLoading;
+  public readonly user = this._userStore.user;
 
   public readonly menuItems: MenuItem[] = [
     {

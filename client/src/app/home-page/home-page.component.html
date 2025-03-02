@@ -7,10 +7,21 @@
       and stay in control of your data!
     </p>
     <ng-template #footer>
-      <div class="flex items-center gap-4 mt-1 text-muted-color">
-        <p-button label="Sign up" (onClick)="navigateAuth()" />
-        <span>Sign up and manage your links</span>
-      </div>
+      @if (user() === undefined) {
+        <div class="flex items-center gap-4 mt-1 text-muted-color">
+          <p-button label="Sign up" (onClick)="navigateAuth()" />
+          <span>Sign up and manage your links</span>
+        </div>
+      } @else {
+        <div class="flex items-center gap-4 mt-1 text-muted-color">
+          <p-button
+            label="Dashboard"
+            outlined
+            (onClick)="navigateDashboard()"
+          />
+          <span>Full control over your links</span>
+        </div>
+      }
     </ng-template>
   </p-card>
   <p-card header="Enter your long link below">

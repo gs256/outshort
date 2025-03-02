@@ -5,11 +5,24 @@
     </a>
   </ng-template>
   <ng-template #end>
-    <p-button
-      label="Sign up"
-      variant="outlined"
-      size="small"
-      (onClick)="navigateAuth()"
-    />
+    @if (!loading()) {
+      @if (user() === undefined) {
+        <p-button
+          label="Sign up"
+          variant="outlined"
+          size="small"
+          (onClick)="navigateAuth()"
+        />
+      } @else {
+        <p-chip class="!py-0 !pl-0 !pr-4">
+          <span
+            class="bg-slate-400 text-primary-contrast rounded-full w-8 h-8 flex items-center justify-center"
+          >
+            {{ user()?.username?.[0]?.toUpperCase() }}
+          </span>
+          <span>{{ user()?.username }}</span>
+        </p-chip>
+      }
+    }
   </ng-template>
 </p-menubar>

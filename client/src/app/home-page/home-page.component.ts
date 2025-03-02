@@ -17,6 +17,8 @@ import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
 import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
+import { tapResponse } from '@ngrx/operators';
+import { UserStore } from '../store/user.store';
 
 @Component({
   selector: 'app-home-page',
@@ -43,11 +45,13 @@ export class HomePageComponent {
   private readonly _messageService = inject(MessageService);
   private readonly _historyService = inject(ShortLinkHistoryService);
   private readonly _router = inject(Router);
+  private readonly _userStore = inject(UserStore);
 
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
   public readonly originalUrl = signal('');
   public readonly history = this._historyService.records;
+  public readonly user = this._userStore.user;
 
   public readonly shortened = computed(
     () => this.shortLink().trim().length > 0,
@@ -63,22 +67,17 @@ export class HomePageComponent {
       return;
     }
     this.processing.set(true);
-    this._api
-      .shorten(this.originalUrl())
-      .pipe(
-        finalize(() => {
-          this.processing.set(false);
-        }),
-      )
-      .subscribe({
-        next: (alias) => {
-          this.shortLink.set(this.getShortUrl(alias));
-          this._historyService.add(originalUrl, alias);
-        },
-        error: (error: Error) => {
-          alert(error.message);
-        },
-      });
+    this._api.shorten(this.originalUrl()).subscribe({
+      next: (alias) => {
+        this.shortLink.set(this.getShortUrl(alias));
+        this._historyService.add(originalUrl, alias);
+        this.processing.set(false);
+      },
+      error: (error: Error) => {
+        alert(error.message);
+        this.processing.set(false);
+      },
+    });
   }
 
   public copyShortLink() {
@@ -99,5 +98,9 @@ export class HomePageComponent {
 
   public navigateAuth() {
     this._router.navigate([ROUTES.auth]);
+  }
+
+  public navigateDashboard() {
+    this._router.navigate([ROUTES.dashboard]);
   }
 }

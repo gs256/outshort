@@ -86,8 +86,7 @@ export class AuthPageComponent {
   public onSignIn() {
     const formValue = this.form.getRawValue();
     this._authService.signIn(formValue.username, formValue.password).subscribe({
-      next: (authToken) => {
-        localStorage.setItem('authToken', authToken);
+      next: () => {
         this._router.navigate(['/']);
       },
       error: (error: Error) => {
