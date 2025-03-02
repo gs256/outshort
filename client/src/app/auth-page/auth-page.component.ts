@@ -1,4 +1,11 @@
-import { Component, effect, inject, Signal, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  Signal,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -39,6 +46,10 @@ export class AuthPageComponent {
 
   public readonly formType = signal<FormType>(DEFAULT_TYPE);
   public readonly formValid = signal(false);
+
+  public readonly submitEnabled = computed(
+    () => this.formValid() && !this._userStore.isLoading(),
+  );
 
   public readonly form = this._fb.nonNullable.group(
     {
@@ -91,6 +102,14 @@ export class AuthPageComponent {
   public onSignIn() {
     const formValue = this.form.getRawValue();
     this._userStore.signIn({
+      username: formValue.username,
+      password: formValue.password,
+    });
+  }
+
+  public onSignUp() {
+    const formValue = this.form.getRawValue();
+    this._userStore.signUp({
       username: formValue.username,
       password: formValue.password,
     });

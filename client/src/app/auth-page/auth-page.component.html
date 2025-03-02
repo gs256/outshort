@@ -45,13 +45,17 @@
       <ng-template #footer>
         <div class="mt-2">
           @if (formType() === "sign-up") {
-            <p-button label="Sign up" [disabled]="!formValid()" />
+            <p-button
+              label="Sign up"
+              (onClick)="onSignUp()"
+              [disabled]="!submitEnabled()"
+            />
           } @else if (formType() === "sign-in") {
             <p-button
               severity="success"
               label="Sign in"
               (onClick)="onSignIn()"
-              [disabled]="!formValid()"
+              [disabled]="!submitEnabled()"
             />
           }
         </div>

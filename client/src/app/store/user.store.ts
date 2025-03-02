@@ -60,6 +60,24 @@ export const UserStore = signalStore(
       ),
     );
 
+    const signUp = rxMethod<{ username: string; password: string }>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true })),
+        switchMap((params) => {
+          return authService.signUp(params.username, params.password).pipe(
+            tapResponse({
+              next: (authToken) => {
+                storage.authToken = authToken;
+                load({});
+              },
+              error: () => {},
+              finalize: () => patchState(store, { isLoading: false }),
+            }),
+          );
+        }),
+      ),
+    );
+
     const signOut = rxMethod(
       pipe(
         tap(() => patchState(store, { isLoading: true })),
@@ -77,7 +95,7 @@ export const UserStore = signalStore(
       ),
     );
 
-    return { load, signIn, signOut };
+    return { load, signIn, signOut, signUp };
   }),
   withHooks({
     onInit(store) {

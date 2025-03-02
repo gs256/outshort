@@ -34,6 +34,26 @@ export class AuthService {
       );
   }
 
+  public signUp(username: string, password: string): Observable<string> {
+    return this._http
+      .post(`${API_URL}/api/v1/auth/sign-up`, {
+        username: username,
+        password: password,
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const message = getErrorResponseMessage(error);
+          if (message) throw new Error(message);
+          throw new Error('Unknown error occured');
+        }),
+        map((res) => {
+          const auth = res as Auth;
+          storage.authToken = auth.authToken;
+          return auth.authToken;
+        }),
+      );
+  }
+
   public signOut() {
     return this._http.post(`${API_URL}/api/v1/auth/sign-out`, null).pipe(
       tapResponse({
