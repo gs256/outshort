@@ -6,15 +6,16 @@ import { getErrorResponseMessage } from '../../utils';
 import { User } from '../../models/user';
 import { storage } from '../../storage';
 import { Auth } from '../../models/auth';
+import { tapResponse } from '@ngrx/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly http = inject(HttpClient);
+  private readonly _http = inject(HttpClient);
 
   public signIn(username: string, password: string): Observable<string> {
-    return this.http
+    return this._http
       .post(`${API_URL}/api/v1/auth/sign-in`, {
         username: username,
         password: password,
@@ -33,12 +34,25 @@ export class AuthService {
       );
   }
 
+  public signOut() {
+    return this._http.post(`${API_URL}/api/v1/auth/sign-out`, null).pipe(
+      tapResponse({
+        next: () => {
+          storage.authToken = null;
+        },
+        error: () => {
+          throw new Error('Unknown error occured');
+        },
+      }),
+    );
+  }
+
   public getUserInfo(): Observable<User> {
     const authToken = storage.authToken;
     if (authToken.length === 0) {
       return throwError(() => new Error('No auth token'));
     }
-    return this.http
+    return this._http
       .get(`${API_URL}/api/v1/auth/user-info`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })

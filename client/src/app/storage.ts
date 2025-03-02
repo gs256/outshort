@@ -5,7 +5,11 @@ export const storage = {
     return localStorage.getItem(AUTH_TOKEN_KEY)?.trim() ?? '';
   },
 
-  set authToken(value: string) {
-    localStorage.setItem(AUTH_TOKEN_KEY, value.trim());
+  set authToken(value: string | null) {
+    if (value === null) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+    } else {
+      localStorage.setItem(AUTH_TOKEN_KEY, value.trim());
+    }
   },
 };

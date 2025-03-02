@@ -12,8 +12,8 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../services/api/auth.service';
-import { catchError } from 'rxjs';
+import { UserStore } from '../store/user.store';
+import { ROUTES } from '../constants';
 
 type FormType = 'sign-in' | 'sign-up';
 
@@ -35,7 +35,7 @@ export class AuthPageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
   private readonly _fb = inject(FormBuilder);
-  private readonly _authService = inject(AuthService);
+  private readonly _userStore = inject(UserStore);
 
   public readonly formType = signal<FormType>(DEFAULT_TYPE);
   public readonly formValid = signal(false);
@@ -65,6 +65,11 @@ export class AuthPageComponent {
       this.formType();
       this.form.updateValueAndValidity();
     });
+    effect(() => {
+      if (this._userStore.user() !== undefined) {
+        this._router.navigate([ROUTES.home]);
+      }
+    });
   }
 
   private validateTypeParams(params: Params) {
@@ -85,13 +90,9 @@ export class AuthPageComponent {
 
   public onSignIn() {
     const formValue = this.form.getRawValue();
-    this._authService.signIn(formValue.username, formValue.password).subscribe({
-      next: () => {
-        this._router.navigate(['/']);
-      },
-      error: (error: Error) => {
-        alert(error.message);
-      },
+    this._userStore.signIn({
+      username: formValue.username,
+      password: formValue.password,
     });
   }
 

@@ -52,6 +52,19 @@ func generateAuthToken() string {
 	return randomString(32)
 }
 
+func getAuthTokenFromHeader(context *gin.Context) string {
+	authHeader := context.GetHeader("Authorization")
+	split := strings.Split(authHeader, " ")
+	if len(split) != 2 {
+		return ""
+	}
+	if strings.ToLower(split[0]) != "bearer" {
+		return ""
+	}
+	token := strings.TrimSpace(split[1])
+	return token
+}
+
 type ApiController struct {
 	storage *Storage
 }
@@ -172,18 +185,14 @@ func (this *ApiController) HandleSignUp(context *gin.Context) {
 	context.JSON(http.StatusAccepted, gin.H{"authToken": authToken})
 }
 
+func (this *ApiController) HandleSignOut(context *gin.Context) {
+	token := getAuthTokenFromHeader(context)
+	_ = this.storage.DeleteAuthToken(token)
+	context.Status(http.StatusAccepted)
+}
+
 func (this *ApiController) HandleGetUserInfo(context *gin.Context) {
-	authHeader := context.GetHeader("Authorization")
-	split := strings.Split(authHeader, " ")
-	if len(split) != 2 {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-	if strings.ToLower(split[0]) != "bearer" {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-	token := strings.TrimSpace(split[1])
+	token := getAuthTokenFromHeader(context)
 	user, err := this.storage.GetUserInfo(token)
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

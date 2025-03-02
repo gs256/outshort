@@ -14,14 +14,16 @@
           (onClick)="navigateAuth()"
         />
       } @else {
-        <p-chip class="!py-0 !pl-0 !pr-4">
-          <span
-            class="bg-slate-400 text-primary-contrast rounded-full w-8 h-8 flex items-center justify-center"
-          >
-            {{ user()?.username?.[0]?.toUpperCase() }}
-          </span>
-          <span>{{ user()?.username }}</span>
-        </p-chip>
+        <a [routerLink]="'/' + userRoute">
+          <p-chip class="!py-0 !pl-0 !pr-4">
+            <span
+              class="bg-slate-400 text-primary-contrast rounded-full w-8 h-8 flex items-center justify-center"
+            >
+              {{ user()?.username?.[0]?.toUpperCase() }}
+            </span>
+            <span>{{ user()?.username }}</span>
+          </p-chip>
+        </a>
       }
     }
   </ng-template>

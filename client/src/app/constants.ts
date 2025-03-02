@@ -5,4 +5,5 @@ export const ROUTES = {
   dashboard: 'app/dashboard',
   about: 'app/about',
   auth: 'app/auth',
+  user: 'app/user',
 };

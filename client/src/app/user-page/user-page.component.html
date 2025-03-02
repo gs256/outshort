@@ -1,0 +1,31 @@
+<app-page-wrapper>
+  <app-menubar></app-menubar>
+  @if (user() !== undefined) {
+    <p-card [header]="'Hi, ' + user()?.username" class="intro-card">
+      <div class="pt-6 flex gap-6">
+        <div
+          class="bg-slate-300 rounded-full flex items-center justify-center text-white text-2xl"
+          [style]="{ width: '90px', height: '90px' }"
+        >
+          <span>{{ user()?.username?.[0]?.toUpperCase() }}</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-1">
+            <strong>Username:</strong>
+            <span>{{ user()?.username }}</span>
+          </div>
+          <div>
+            <a
+              class="flex items-center gap-1 text-red-500 underline cursor-pointer"
+              (click)="signOut()"
+            >
+              <i class="pi pi-arrow-right" [style]="{ fontSize: '0.8rem' }"></i>
+              <span>Sign out</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <ng-template #footer> </ng-template>
+    </p-card>
+  }
+</app-page-wrapper>

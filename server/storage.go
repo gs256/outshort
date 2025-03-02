@@ -123,7 +123,7 @@ func (this *Storage) AuthenticateUser(username string, password string) (int64, 
 
 func (this *Storage) GetUserInfo(authToken string) (*UserModel, *StorageError) {
 	var user UserModel
-	err := this.db.QueryRow("SELECT users.* FROM users JOIN auth_tokens ON users.id = auth_tokens.user_id WHERE auth_tokens.token = ?;", authToken).Scan(&user.Id, &user.Username, &user.Password)
+	err := this.db.QueryRow("SELECT users.* FROM users JOIN auth_tokens ON users.id = auth_tokens.user_id WHERE auth_tokens.token = ?", authToken).Scan(&user.Id, &user.Username, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, NewStorageError(NotFound, "User not found")
@@ -131,6 +131,14 @@ func (this *Storage) GetUserInfo(authToken string) (*UserModel, *StorageError) {
 		return nil, NewStorageError(AnyError, "Unknown error")
 	}
 	return &user, nil
+}
+
+func (this *Storage) DeleteAuthToken(authToken string) *StorageError {
+	_, err := this.db.Exec("DELETE FROM auth_tokens WHERE token = ?", authToken)
+	if err != nil {
+		return NewStorageError(AnyError, "Unknown error")
+	}
+	return nil
 }
 
 func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {

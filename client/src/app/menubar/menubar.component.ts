@@ -18,6 +18,8 @@ export class MenubarComponent {
   private readonly _router = inject(Router);
   private readonly _userStore = inject(UserStore);
 
+  public readonly userRoute = ROUTES.user;
+
   public readonly loading = this._userStore.isLoading;
   public readonly user = this._userStore.user;
 
@@ -41,5 +43,9 @@ export class MenubarComponent {
 
   public navigateAuth() {
     this._router.navigate([ROUTES.auth]);
+  }
+
+  public navigateUser() {
+    this._router.navigate([ROUTES.user]);
   }
 }
