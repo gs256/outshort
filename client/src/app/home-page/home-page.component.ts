@@ -12,7 +12,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastModule } from 'primeng/toast';
 import { ROUTES } from '../constants';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
 import { MenubarComponent } from '../menubar/menubar.component';
@@ -34,6 +34,8 @@ import { UserStore } from '../store/user.store';
     TableModule,
     MenubarComponent,
     PageWrapperComponent,
+    RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
