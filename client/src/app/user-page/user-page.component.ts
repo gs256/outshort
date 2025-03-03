@@ -4,7 +4,6 @@ import { MenubarComponent } from '../menubar/menubar.component';
 import { CardModule } from 'primeng/card';
 import { UserStore } from '../store/user.store';
 import { Router } from '@angular/router';
-import { ROUTES } from '../constants';
 
 @Component({
   selector: 'app-user-page',
@@ -21,7 +20,7 @@ export class UserPageComponent {
   constructor() {
     effect(() => {
       if (this._userStore.user() === undefined) {
-        this._router.navigate([ROUTES.home]);
+        this._router.navigate(['app']);
       }
     });
   }

@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ApiService } from '../services/api/api.service';
-import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
@@ -11,13 +10,11 @@ import { TabsModule } from 'primeng/tabs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastModule } from 'primeng/toast';
-import { ROUTES } from '../constants';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
 import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
-import { tapResponse } from '@ngrx/operators';
 import { UserStore } from '../store/user.store';
 
 @Component({
@@ -35,7 +32,6 @@ import { UserStore } from '../store/user.store';
     MenubarComponent,
     PageWrapperComponent,
     RouterLink,
-    RouterLinkActive,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
@@ -99,10 +95,10 @@ export class HomePageComponent {
   }
 
   public navigateAuth() {
-    this._router.navigate([ROUTES.auth]);
+    this._router.navigate(['app/auth']);
   }
 
   public navigateDashboard() {
-    this._router.navigate([ROUTES.dashboard]);
+    this._router.navigate(['app/dashboard']);
   }
 }

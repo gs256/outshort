@@ -5,7 +5,6 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { UserStore } from '../store/user.store';
 import { Router } from '@angular/router';
-import { ROUTES } from '../constants';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -20,13 +19,13 @@ export class DashboardPageComponent {
   public readonly user = this._userStore.user;
 
   public navigateSignIn() {
-    this._router.navigate([ROUTES.auth], {
+    this._router.navigate(['app/auth'], {
       queryParams: { type: 'sign-in' },
     });
   }
 
   public navigateSignUp() {
-    this._router.navigate([ROUTES.auth], {
+    this._router.navigate(['app/auth'], {
       queryParams: { type: 'sign-up' },
     });
   }

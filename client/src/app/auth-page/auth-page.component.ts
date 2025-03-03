@@ -20,7 +20,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { UserStore } from '../store/user.store';
-import { ROUTES } from '../constants';
 
 type FormType = 'sign-in' | 'sign-up';
 
@@ -78,7 +77,7 @@ export class AuthPageComponent {
     });
     effect(() => {
       if (this._userStore.user() !== undefined) {
-        this._router.navigate([ROUTES.home]);
+        this._router.navigate(['app']);
       }
     });
   }
