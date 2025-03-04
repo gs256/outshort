@@ -26,7 +26,8 @@ func main() {
 	router.POST("/api/v1/auth/sign-up", apiController.HandleSignUp)
 	router.POST("/api/v1/auth/sign-out", apiController.HandleSignOut)
 	router.GET("/api/v1/auth/user-info", apiController.HandleGetUserInfo)
-	router.POST("/api/v1/links/quick-shorten", apiController.HandleShorten)
+	router.POST("/api/v1/links/quick-shorten", apiController.HandleQuickShorten)
+	router.POST("/api/v1/links/create", apiController.HandleLinkCreate)
 
 	router.Run(":8249")
 }

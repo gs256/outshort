@@ -17,6 +17,13 @@ type ShortenRequest struct {
 	Url string `json:"url"`
 }
 
+type CreateLinkRequest struct {
+	Url      string `json:"url"`
+	Name     string `json:"name"`
+	Alias    string `json:"alias"`
+	Lifetime int    `json:"lifetime"`
+}
+
 type SignUpRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -79,7 +86,7 @@ func (this *ApiController) HandleTest(context *gin.Context) {
 	})
 }
 
-func (this *ApiController) HandleShorten(context *gin.Context) {
+func (this *ApiController) HandleQuickShorten(context *gin.Context) {
 	var req ShortenRequest
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
@@ -92,13 +99,72 @@ func (this *ApiController) HandleShorten(context *gin.Context) {
 	}
 	for true {
 		alias := randomString(AliasLength)
-		_, err := this.storage.CreateLink(originalUrl, alias)
+		_, err := this.storage.CreateQuickLink(originalUrl, alias)
 		if err != nil && err.code == UniqueViolation {
 			continue
 		}
 		context.JSON(http.StatusAccepted, gin.H{"alias": alias})
 		break
 	}
+}
+
+func (this *ApiController) HandleLinkCreate(context *gin.Context) {
+	token := getAuthTokenFromHeader(context)
+	user, err := this.storage.GetUserInfo(token)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	var req CreateLinkRequest
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
+		return
+	}
+	if req.Alias != "" {
+		if len(req.Alias) < 5 {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid alias"})
+			return
+		}
+		exists, err := this.storage.AliasAlreadyExists(req.Alias)
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+			return
+		}
+		if exists {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "Alias already exists"})
+			return
+		}
+	}
+	originalUrl, urlValid := validateUrl(req.Url)
+	if !urlValid {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid url"})
+		return
+	}
+	if req.Lifetime < 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid lifetime"})
+		return
+	}
+	if req.Alias == "" {
+		for true {
+			newAlias := randomString(AliasLength)
+			exists, err := this.storage.AliasAlreadyExists(req.Alias)
+			if err != nil {
+				context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+				return
+			}
+			if exists {
+				continue
+			}
+			req.Alias = newAlias
+			break
+		}
+	}
+	_, err = this.storage.CreateLink(originalUrl, req.Name, req.Alias, req.Lifetime, user.Id)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return
+	}
+	context.JSON(http.StatusAccepted, req)
 }
 
 func (this *ApiController) HandleRedirect(context *gin.Context) {

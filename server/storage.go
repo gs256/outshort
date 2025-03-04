@@ -53,8 +53,8 @@ func (this *Storage) Dispose() {
 	defer this.db.Close()
 }
 
-func (this *Storage) CreateLink(originalUrl string, alias string) (int64, *StorageError) {
-	alreadyExists, err := aliasAlreadyExists(this.db, alias)
+func (this *Storage) CreateQuickLink(originalUrl string, alias string) (int64, *StorageError) {
+	alreadyExists, err := this.AliasAlreadyExists(alias)
 	if err != nil {
 		return -1, NewStorageError(AnyError, err.Error())
 	}
@@ -62,7 +62,22 @@ func (this *Storage) CreateLink(originalUrl string, alias string) (int64, *Stora
 		return -1, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
 
-	id, err := insertLink(this.db, originalUrl, alias)
+	id, err := insertQuickLink(this.db, originalUrl, alias)
+	if err != nil {
+		return -1, NewStorageError(AnyError, err.Error())
+	}
+	return id, nil
+}
+
+func (this *Storage) CreateLink(originalUrl string, name string, alias string, lifetime int, ownerId int64) (int64, *StorageError) {
+	alreadyExists, err := this.AliasAlreadyExists(alias)
+	if err != nil {
+		return -1, NewStorageError(AnyError, err.Error())
+	}
+	if alreadyExists {
+		return -1, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
+	}
+	id, err := insertLink(this.db, originalUrl, name, alias, lifetime, ownerId)
 	if err != nil {
 		return -1, NewStorageError(AnyError, err.Error())
 	}
@@ -141,9 +156,9 @@ func (this *Storage) DeleteAuthToken(authToken string) *StorageError {
 	return nil
 }
 
-func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {
+func (this *Storage) AliasAlreadyExists(alias string) (bool, error) {
 	var exists int
-	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM links WHERE alias = ?)", alias).Scan(&exists)
+	err := this.db.QueryRow("SELECT EXISTS(SELECT 1 FROM links WHERE alias = ?)", alias).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
@@ -153,8 +168,20 @@ func aliasAlreadyExists(db *sql.DB, alias string) (bool, error) {
 	return false, nil
 }
 
-func insertLink(db *sql.DB, originalUrl string, alias string) (int64, error) {
+func insertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error) {
 	res, err := db.Exec("INSERT INTO links (alias, original_url) VALUES(?, ?)", alias, originalUrl)
+	if err != nil {
+		return -1, err
+	}
+	var id int64
+	if id, err = res.LastInsertId(); err != nil {
+		return -1, err
+	}
+	return id, nil
+}
+
+func insertLink(db *sql.DB, originalUrl string, name string, alias string, lifetime int, ownerId int64) (int64, error) {
+	res, err := db.Exec("INSERT INTO links (alias, original_url, name, lifetime_sec, owner_id) VALUES(?, ?, ?, ?, ?)", alias, originalUrl, name, lifetime, ownerId)
 	if err != nil {
 		return -1, err
 	}
