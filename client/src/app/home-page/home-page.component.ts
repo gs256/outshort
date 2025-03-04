@@ -65,7 +65,7 @@ export class HomePageComponent {
       return;
     }
     this.processing.set(true);
-    this._api.shorten(this.originalUrl()).subscribe({
+    this._api.quickShorten(this.originalUrl()).subscribe({
       next: (alias) => {
         this.shortLink.set(this.getShortUrl(alias));
         this._historyService.add(originalUrl, alias);

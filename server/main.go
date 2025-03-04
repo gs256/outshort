@@ -21,12 +21,12 @@ func main() {
 	apiController.Initialize(&storage)
 
 	router.GET("/api/v1/test", apiController.HandleTest)
-	router.POST("/api/v1/shorten", apiController.HandleShorten)
 	router.GET("/api/v1/redirect/:alias", apiController.HandleRedirect)
 	router.POST("/api/v1/auth/sign-in", apiController.HandleSignIn)
 	router.POST("/api/v1/auth/sign-up", apiController.HandleSignUp)
 	router.POST("/api/v1/auth/sign-out", apiController.HandleSignOut)
 	router.GET("/api/v1/auth/user-info", apiController.HandleGetUserInfo)
+	router.POST("/api/v1/links/quick-shorten", apiController.HandleShorten)
 
 	router.Run(":8249")
 }

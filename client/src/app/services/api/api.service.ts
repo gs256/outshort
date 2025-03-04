@@ -10,20 +10,26 @@ import { getErrorResponseMessage } from '../../utils';
 export class ApiService {
   private readonly http = inject(HttpClient);
 
-  public shorten(url: string): Observable<string> {
-    return this.http.post(`${API_URL}/api/v1/shorten`, { url: url }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        const message = getErrorResponseMessage(error);
-        if (message) throw new Error(message);
-        throw new Error('Unknown error occured');
-      }),
-      map((res) => {
-        if ('alias' in res && typeof res['alias'] == 'string' && res['alias']) {
-          return res['alias'] as string;
-        }
-        throw new Error('Invalid response from server');
-      }),
-    );
+  public quickShorten(url: string): Observable<string> {
+    return this.http
+      .post(`${API_URL}/api/v1/links/quick-shorten`, { url: url })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const message = getErrorResponseMessage(error);
+          if (message) throw new Error(message);
+          throw new Error('Unknown error occured');
+        }),
+        map((res) => {
+          if (
+            'alias' in res &&
+            typeof res['alias'] == 'string' &&
+            res['alias']
+          ) {
+            return res['alias'] as string;
+          }
+          throw new Error('Invalid response from server');
+        }),
+      );
   }
 
   public test(): Observable<string> {
