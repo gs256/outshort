@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
@@ -25,6 +26,16 @@ type UserModel struct {
 	Id       int64
 	Username string
 	Password string
+}
+
+type LinkModel struct {
+	Id          int64
+	Alias       string
+	OriginalUrl string
+	Name        string
+	LifetimeSec int
+	CreatedAt   time.Time
+	OwnerId     sql.NullInt64
 }
 
 func NewStorageError(code int, message string) *StorageError {
@@ -69,19 +80,48 @@ func (this *Storage) CreateQuickLink(originalUrl string, alias string) (int64, *
 	return id, nil
 }
 
-func (this *Storage) CreateLink(originalUrl string, name string, alias string, lifetime int, ownerId int64) (int64, *StorageError) {
+func (this *Storage) CreateLink(originalUrl string, name string, alias string, lifetime int, ownerId int64) (*LinkModel, *StorageError) {
 	alreadyExists, err := this.AliasAlreadyExists(alias)
 	if err != nil {
-		return -1, NewStorageError(AnyError, err.Error())
+		return nil, NewStorageError(AnyError, err.Error())
 	}
 	if alreadyExists {
-		return -1, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
+		return nil, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
-	id, err := insertLink(this.db, originalUrl, name, alias, lifetime, ownerId)
+	linkModel, err := insertLink(this.db, originalUrl, name, alias, lifetime, ownerId)
 	if err != nil {
-		return -1, NewStorageError(AnyError, err.Error())
+		return nil, NewStorageError(AnyError, err.Error())
 	}
-	return id, nil
+	return linkModel, nil
+}
+
+func (this *Storage) GetAllLinks(ownerId int64) ([]LinkModel, *StorageError) {
+	rows, err := this.db.Query("SELECT id, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE owner_id = ?", ownerId)
+	if err != nil {
+		return nil, NewStorageError(AnyError, "Query error")
+	}
+	defer rows.Close()
+	var links []LinkModel
+	for rows.Next() {
+		var link LinkModel
+		err := rows.Scan(
+			&link.Id,
+			&link.Alias,
+			&link.OriginalUrl,
+			&link.Name,
+			&link.LifetimeSec,
+			&link.CreatedAt,
+			&link.OwnerId,
+		)
+		if err != nil {
+			return nil, NewStorageError(AnyError, "Failed to scan row")
+		}
+		links = append(links, link)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, NewStorageError(AnyError, "Unknown error")
+	}
+	return links, nil
 }
 
 func (this *Storage) GetOriginalUrl(alias string) (string, *StorageError) {
@@ -180,14 +220,39 @@ func insertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error
 	return id, nil
 }
 
-func insertLink(db *sql.DB, originalUrl string, name string, alias string, lifetime int, ownerId int64) (int64, error) {
+func insertLink(db *sql.DB, originalUrl string, name string, alias string, lifetime int, ownerId int64) (*LinkModel, error) {
 	res, err := db.Exec("INSERT INTO links (alias, original_url, name, lifetime_sec, owner_id) VALUES(?, ?, ?, ?, ?)", alias, originalUrl, name, lifetime, ownerId)
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 	var id int64
 	if id, err = res.LastInsertId(); err != nil {
-		return -1, err
+		return nil, err
 	}
-	return id, nil
+	linkModel, err := getLinkById(db, id)
+	if err != nil {
+		return nil, err
+	}
+	return linkModel, nil
+}
+
+func getLinkById(db *sql.DB, id int64) (*LinkModel, error) {
+	var linkModel LinkModel
+	row := db.QueryRow(
+		"SELECT id, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE id = ?",
+		id,
+	)
+	err := row.Scan(
+		&linkModel.Id,
+		&linkModel.Alias,
+		&linkModel.OriginalUrl,
+		&linkModel.Name,
+		&linkModel.LifetimeSec,
+		&linkModel.CreatedAt,
+		&linkModel.OwnerId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &linkModel, nil
 }

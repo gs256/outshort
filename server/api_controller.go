@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +33,15 @@ type SignUpRequest struct {
 type SignInRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type Link struct {
+	Id           int64     `json:"id"`
+	Alias        string    `json:"alias"`
+	OriginalUrl  string    `json:"originalUrl"`
+	Name         string    `json:"name"`
+	Lifetime     int       `json:"lifetime"`
+	CreationDate time.Time `json:"creationDate"`
 }
 
 func randomString(length int) string {
@@ -159,12 +169,29 @@ func (this *ApiController) HandleLinkCreate(context *gin.Context) {
 			break
 		}
 	}
-	_, err = this.storage.CreateLink(originalUrl, req.Name, req.Alias, req.Lifetime, user.Id)
+	linkModel, err := this.storage.CreateLink(originalUrl, req.Name, req.Alias, req.Lifetime, user.Id)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	context.JSON(http.StatusAccepted, req)
+	link := ToLink(*linkModel)
+	context.JSON(http.StatusAccepted, link)
+}
+
+func (this *ApiController) HandleLinksGetAll(context *gin.Context) {
+	token := getAuthTokenFromHeader(context)
+	user, err := this.storage.GetUserInfo(token)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	linkModels, err := this.storage.GetAllLinks(user.Id)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Error getting user links"})
+		return
+	}
+	links := ToLinks(linkModels)
+	context.JSON(http.StatusOK, links)
 }
 
 func (this *ApiController) HandleRedirect(context *gin.Context) {
