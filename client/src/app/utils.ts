@@ -16,3 +16,7 @@ export function getErrorResponseMessage(
   }
   return undefined;
 }
+
+export function getShortUrl(alias: string) {
+  return `${window.location.origin}/${alias}`;
+}

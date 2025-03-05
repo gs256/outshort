@@ -1,5 +1,7 @@
-<app-page-wrapper>
-  <app-menubar></app-menubar>
+<app-page-wrapper [fullWidth]="true">
+  <div class="menubar-container">
+    <app-menubar></app-menubar>
+  </div>
   @if (user() === undefined) {
     <p-card header="Dashboard">
       <p class="m-0 text-muted-color">
@@ -17,6 +19,40 @@
       </ng-template>
     </p-card>
   } @else {
-    <p>TODO: dashboard</p>
+    <div
+      class="px-6 flex flex-col items-stretch"
+      [style]="{ width: '100%', maxWidth: '1100px' }"
+    >
+      <p-card header="My links">
+        <ng-template #subtitle>Complete list of your links</ng-template>
+        <p-table
+          [value]="links()"
+          [scrollable]="true"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[10, 20, 30]"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #header>
+            <tr>
+              <th>Name</th>
+              <th>Short url</th>
+              <th>Original url</th>
+              <th>Lifetime</th>
+              <th>Expires</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-item>
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ getShortUrl(item.alias) }}</td>
+              <td>{{ item.originalUrl }}</td>
+              <td>{{ lifetimeToString(item.lifetime) }}</td>
+              <td>{{ getExpirationString(item) }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
   }
 </app-page-wrapper>

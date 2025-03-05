@@ -16,6 +16,7 @@ import { TableModule } from 'primeng/table';
 import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
 import { UserStore } from '../store/user.store';
+import { getShortUrl } from '../utils';
 
 @Component({
   selector: 'app-home-page',
@@ -50,6 +51,7 @@ export class HomePageComponent {
   public readonly originalUrl = signal('');
   public readonly history = this._historyService.records;
   public readonly user = this._userStore.user;
+  public readonly getShortUrl = getShortUrl;
 
   public readonly shortened = computed(
     () => this.shortLink().trim().length > 0,
@@ -67,7 +69,7 @@ export class HomePageComponent {
     this.processing.set(true);
     this._api.quickShorten(this.originalUrl()).subscribe({
       next: (alias) => {
-        this.shortLink.set(this.getShortUrl(alias));
+        this.shortLink.set(getShortUrl(alias));
         this._historyService.add(originalUrl, alias);
         this.processing.set(false);
       },
@@ -88,10 +90,6 @@ export class HomePageComponent {
       detail: this.shortLink(),
       severity: 'success',
     });
-  }
-
-  public getShortUrl(alias: string) {
-    return `${window.location.origin}/${alias}`;
   }
 
   public navigateAuth() {
