@@ -24,7 +24,13 @@
       [style]="{ width: '100%', maxWidth: '1100px' }"
     >
       <p-card header="My links">
-        <ng-template #subtitle>Complete list of your links</ng-template>
+        <ng-template #subtitle>Complete list of your short links</ng-template>
+        <div class="flex items-center justify-start py-4">
+          <p-button>
+            <i class="pi pi-plus"></i>
+            <span>New short link</span>
+          </p-button>
+        </div>
         <p-table
           [value]="links()"
           [scrollable]="true"
@@ -32,6 +38,9 @@
           [rows]="10"
           [rowsPerPageOptions]="[10, 20, 30]"
           [tableStyle]="{ 'min-width': '50rem' }"
+          showGridlines
+          stripedRows
+          selectionMode="single"
         >
           <ng-template #header>
             <tr>
@@ -43,7 +52,7 @@
             </tr>
           </ng-template>
           <ng-template #body let-item>
-            <tr>
+            <tr class="relative cursor-pointer" (click)="onRowClicked(item)">
               <td>{{ item.name }}</td>
               <td>{{ getShortUrl(item.alias) }}</td>
               <td>{{ item.originalUrl }}</td>

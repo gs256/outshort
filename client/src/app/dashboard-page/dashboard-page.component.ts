@@ -82,6 +82,10 @@ export class DashboardPageComponent {
     }
   }
 
+  public onRowClicked(link: Link) {
+    console.log('row clicked', link.alias);
+  }
+
   private convertSeconds(seconds: number): string {
     const units = [
       { label: 'year', seconds: 31536000 },
