@@ -1,0 +1,86 @@
+<p-dialog
+  header="Make new short link"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <label for="name" class="font-semibold">
+        <span>Name</span>
+      </label>
+      <input
+        pInputText
+        id="name"
+        placeholder="Example link"
+        [formControl]="linkForm.controls.name"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="original-url" class="font-semibold">
+        <span>Original url</span>
+        <span class="text-red-500"> *</span>
+      </label>
+      <input
+        pInputText
+        id="original-url"
+        placeholder="https://example.com?param=long_link_with_multiple_parameters"
+        [formControl]="linkForm.controls.originalUrl"
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="alias" class="font-semibold">Choose alias</label>
+      <p-selectbutton
+        [options]="[
+          { label: 'Random alias', value: 'random' },
+          { label: 'Custom alias', value: 'custom' },
+        ]"
+        [allowEmpty]="false"
+        [(ngModel)]="aliasType"
+        optionLabel="label"
+        optionValue="value"
+        aria-labelledby="basic"
+      />
+      @if (aliasType() === "custom") {
+        <div class="flex items-center gap-2 text-muted-color mt-4">
+          <span>{{ origin }}</span>
+          <input
+            pInputText
+            id="alias"
+            class="min-w-0"
+            placeholder="example123"
+            [formControl]="linkForm.controls.alias"
+          />
+        </div>
+      }
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for="expires-in" class="font-semibold">
+        <span>Expires in</span>
+        <span class="text-red-500"> *</span>
+      </label>
+      <p-select
+        id="expires-in"
+        appendTo="body"
+        [options]="lifetimeOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="When link expires"
+        class="w-full"
+        [formControl]="linkForm.controls.lifetime"
+      />
+    </div>
+  </div>
+  <div class="flex justify-end gap-2 pt-6">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      (click)="visible.set(false)"
+    />
+    <p-button
+      label="Create"
+      (click)="onCreate()"
+      [disabled]="!(formValid$ | async)"
+    />
+  </div>
+</p-dialog>

@@ -11,6 +11,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { LinksService } from '../services/api/links.service';
 import { Link } from '../models/link';
+import { LinkUpsert } from '../models/link-upsert';
 
 export const LinksStore = signalStore(
   withState({
@@ -33,7 +34,22 @@ export const LinksStore = signalStore(
       ),
     );
 
-    return { load };
+    const createLink = rxMethod<LinkUpsert>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true })),
+        switchMap((body) => {
+          return linksService.createLink(body).pipe(
+            tapResponse({
+              next: () => load({}),
+              error: () => {},
+              finalize: () => patchState(store, { isLoading: false }),
+            }),
+          );
+        }),
+      ),
+    );
+
+    return { load, createLink };
   }),
   withHooks({
     onInit(store) {

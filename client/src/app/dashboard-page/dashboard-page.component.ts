@@ -9,6 +9,7 @@ import { Link } from '../models/link';
 import { TableModule } from 'primeng/table';
 import { LinksStore } from '../store/links.store';
 import { getShortUrl } from '../utils';
+import { LinkModalComponent } from '../link-modal/link-modal.component';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -18,6 +19,7 @@ import { getShortUrl } from '../utils';
     CardModule,
     ButtonModule,
     TableModule,
+    LinkModalComponent,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
@@ -28,6 +30,7 @@ export class DashboardPageComponent {
   private readonly _router = inject(Router);
   private readonly _linksStore = inject(LinksStore);
 
+  public readonly editorVisible = signal(false);
   public readonly user = this._userStore.user;
   public readonly links = this._linksStore.links;
   public readonly getShortUrl = getShortUrl;

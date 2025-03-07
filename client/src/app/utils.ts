@@ -18,5 +18,9 @@ export function getErrorResponseMessage(
 }
 
 export function getShortUrl(alias: string) {
-  return `${window.location.origin}/${alias}`;
+  return `${getOrigin()}/${alias}`;
+}
+
+export function getOrigin() {
+  return window.location.origin;
 }
