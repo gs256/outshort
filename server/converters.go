@@ -11,12 +11,12 @@ func ToLinks(linkModels []LinkModel) []Link {
 }
 
 func ToLink(model LinkModel) Link {
-	return NewLink(model.Id, model.Name, model.OriginalUrl, model.Alias, model.LifetimeSec, model.CreatedAt)
+	return NewLink(model.Id, model.Uid, model.Name, model.OriginalUrl, model.Alias, model.LifetimeSec, model.CreatedAt)
 }
 
-func NewLink(id int64, name string, originalUrl string, alias string, lifetime int, creationDate time.Time) Link {
+func NewLink(id int64, uid string, name string, originalUrl string, alias string, lifetime int, creationDate time.Time) Link {
 	return Link{
-		Id:           id,
+		Uid:          uid,
 		Alias:        alias,
 		OriginalUrl:  originalUrl,
 		Name:         name,

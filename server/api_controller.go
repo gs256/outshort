@@ -36,21 +36,12 @@ type SignInRequest struct {
 }
 
 type Link struct {
-	Id           int64     `json:"id"`
+	Uid          string    `json:"uid"`
 	Alias        string    `json:"alias"`
 	OriginalUrl  string    `json:"originalUrl"`
 	Name         string    `json:"name"`
 	Lifetime     int       `json:"lifetime"`
 	CreationDate time.Time `json:"creationDate"`
-}
-
-func randomString(length int) string {
-	result := ""
-	for range length {
-		randomIndex := randRange(0, len(StringGenerationAlphabet)-1)
-		result += string(StringGenerationAlphabet[randomIndex])
-	}
-	return result
 }
 
 func randRange(min int, max int) int {
@@ -66,7 +57,7 @@ func validateUrl(sourceUrl string) (string, bool) {
 }
 
 func generateAuthToken() string {
-	return randomString(32)
+	return RandomString(32)
 }
 
 func getAuthTokenFromHeader(context *gin.Context) string {
@@ -108,7 +99,7 @@ func (this *ApiController) HandleQuickShorten(context *gin.Context) {
 		return
 	}
 	for true {
-		alias := randomString(AliasLength)
+		alias := RandomString(AliasLength)
 		_, err := this.storage.CreateQuickLink(originalUrl, alias)
 		if err != nil && err.code == UniqueViolation {
 			continue
@@ -156,7 +147,7 @@ func (this *ApiController) HandleLinkCreate(context *gin.Context) {
 	}
 	if req.Alias == "" {
 		for true {
-			newAlias := randomString(AliasLength)
+			newAlias := RandomString(AliasLength)
 			exists, err := this.storage.AliasAlreadyExists(req.Alias)
 			if err != nil {
 				context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})

@@ -30,6 +30,7 @@ type UserModel struct {
 
 type LinkModel struct {
 	Id          int64
+	Uid         string
 	Alias       string
 	OriginalUrl string
 	Name        string
@@ -88,7 +89,8 @@ func (this *Storage) CreateLink(originalUrl string, name string, alias string, l
 	if alreadyExists {
 		return nil, NewStorageError(UniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
-	linkModel, err := insertLink(this.db, originalUrl, name, alias, lifetime, ownerId)
+	uid := generateLinkUid()
+	linkModel, err := insertLink(this.db, uid, originalUrl, name, alias, lifetime, ownerId)
 	if err != nil {
 		return nil, NewStorageError(AnyError, err.Error())
 	}
@@ -96,7 +98,7 @@ func (this *Storage) CreateLink(originalUrl string, name string, alias string, l
 }
 
 func (this *Storage) GetAllLinks(ownerId int64) ([]LinkModel, *StorageError) {
-	rows, err := this.db.Query("SELECT id, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE owner_id = ?", ownerId)
+	rows, err := this.db.Query("SELECT id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE owner_id = ?", ownerId)
 	if err != nil {
 		return nil, NewStorageError(AnyError, "Query error")
 	}
@@ -106,6 +108,7 @@ func (this *Storage) GetAllLinks(ownerId int64) ([]LinkModel, *StorageError) {
 		var link LinkModel
 		err := rows.Scan(
 			&link.Id,
+			&link.Uid,
 			&link.Alias,
 			&link.OriginalUrl,
 			&link.Name,
@@ -220,8 +223,8 @@ func insertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error
 	return id, nil
 }
 
-func insertLink(db *sql.DB, originalUrl string, name string, alias string, lifetime int, ownerId int64) (*LinkModel, error) {
-	res, err := db.Exec("INSERT INTO links (alias, original_url, name, lifetime_sec, owner_id) VALUES(?, ?, ?, ?, ?)", alias, originalUrl, name, lifetime, ownerId)
+func insertLink(db *sql.DB, uid string, originalUrl string, name string, alias string, lifetime int, ownerId int64) (*LinkModel, error) {
+	res, err := db.Exec("INSERT INTO links (uid, alias, original_url, name, lifetime_sec, owner_id) VALUES(?, ?, ?, ?, ?, ?)", uid, alias, originalUrl, name, lifetime, ownerId)
 	if err != nil {
 		return nil, err
 	}
@@ -239,11 +242,12 @@ func insertLink(db *sql.DB, originalUrl string, name string, alias string, lifet
 func getLinkById(db *sql.DB, id int64) (*LinkModel, error) {
 	var linkModel LinkModel
 	row := db.QueryRow(
-		"SELECT id, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE id = ?",
+		"SELECT id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE id = ?",
 		id,
 	)
 	err := row.Scan(
 		&linkModel.Id,
+		&linkModel.Uid,
 		&linkModel.Alias,
 		&linkModel.OriginalUrl,
 		&linkModel.Name,
@@ -255,4 +259,8 @@ func getLinkById(db *sql.DB, id int64) (*LinkModel, error) {
 		return nil, err
 	}
 	return &linkModel, nil
+}
+
+func generateLinkUid() string {
+	return RandomString(16)
 }
