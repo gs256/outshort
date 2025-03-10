@@ -66,6 +66,11 @@ export class LinkModalComponent {
         this.linkForm.controls.alias.setValue('');
       }
     });
+    effect(() => {
+      if (!this.visible()) {
+        this.linkForm.reset();
+      }
+    });
     this.linkForm.valueChanges.subscribe((value) => {
       const formValue = this.linkForm.getRawValue();
       console.log(formToLinkUpsert(formValue));
@@ -76,5 +81,6 @@ export class LinkModalComponent {
     const formValue = this.linkForm.getRawValue();
     const body = formToLinkUpsert(formValue);
     this._store.createLink(body);
+    this.visible.set(false);
   }
 }
