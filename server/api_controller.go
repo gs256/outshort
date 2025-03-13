@@ -18,7 +18,7 @@ type ShortenRequest struct {
 	Url string `json:"url"`
 }
 
-type CreateLinkRequest struct {
+type UpsertLinkRequest struct {
 	Url      string `json:"url"`
 	Name     string `json:"name"`
 	Alias    string `json:"alias"`
@@ -116,7 +116,7 @@ func (this *ApiController) HandleLinkCreate(context *gin.Context) {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	var req CreateLinkRequest
+	var req UpsertLinkRequest
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
 		return
@@ -161,6 +161,64 @@ func (this *ApiController) HandleLinkCreate(context *gin.Context) {
 		}
 	}
 	linkModel, err := this.storage.CreateLink(originalUrl, req.Name, req.Alias, req.Lifetime, user.Id)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return
+	}
+	link := ToLink(*linkModel)
+	context.JSON(http.StatusAccepted, link)
+}
+
+func (this *ApiController) HandleLinkUpdate(context *gin.Context) {
+	linkUid := context.Param("uid")
+	if len(linkUid) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Link uid required"})
+	}
+	_, err := this.storage.FindLinkByUid(linkUid)
+	if err != nil {
+		if err.code == NotFound {
+			context.JSON(http.StatusBadRequest, gin.H{"error": "Link not found"})
+			return
+		}
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return
+	}
+	// TODO: check owner
+	token := getAuthTokenFromHeader(context)
+	user, err := this.storage.GetUserInfo(token)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	var req UpsertLinkRequest
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
+		return
+	}
+	if len(req.Alias) < 5 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid alias"})
+		return
+	}
+	linkWithSameAlias, err := this.storage.FindLinkByAlias(req.Alias)
+	if err != nil {
+		if err.code != NotFound {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+			return
+		}
+	} else if linkWithSameAlias.Uid != linkUid {
+		context.JSON(http.StatusConflict, gin.H{"error": "Alias already exists"})
+		return
+	}
+	originalUrl, urlValid := validateUrl(req.Url)
+	if !urlValid {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid url"})
+		return
+	}
+	if req.Lifetime < 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid lifetime"})
+		return
+	}
+	linkModel, err := this.storage.UpdateLink(linkUid, originalUrl, req.Name, req.Alias, req.Lifetime, user.Id)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return

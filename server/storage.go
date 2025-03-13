@@ -39,6 +39,8 @@ type LinkModel struct {
 	OwnerId     sql.NullInt64
 }
 
+const LinkColumns = "id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id"
+
 func NewStorageError(code int, message string) *StorageError {
 	return &StorageError{code, message}
 }
@@ -91,6 +93,14 @@ func (this *Storage) CreateLink(originalUrl string, name string, alias string, l
 	}
 	uid := generateLinkUid()
 	linkModel, err := insertLink(this.db, uid, originalUrl, name, alias, lifetime, ownerId)
+	if err != nil {
+		return nil, NewStorageError(AnyError, err.Error())
+	}
+	return linkModel, nil
+}
+
+func (this *Storage) UpdateLink(uid string, originalUrl string, name string, alias string, lifetime int, ownerId int64) (*LinkModel, *StorageError) {
+	linkModel, err := updateLink(this.db, uid, originalUrl, name, alias, lifetime)
 	if err != nil {
 		return nil, NewStorageError(AnyError, err.Error())
 	}
@@ -211,6 +221,28 @@ func (this *Storage) AliasAlreadyExists(alias string) (bool, error) {
 	return false, nil
 }
 
+func (this *Storage) FindLinkByUid(uid string) (*LinkModel, *StorageError) {
+	link, err := getLinkByUid(this.db, uid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewStorageError(NotFound, err.Error())
+		}
+		return nil, NewStorageError(AnyError, err.Error())
+	}
+	return link, nil
+}
+
+func (this *Storage) FindLinkByAlias(alias string) (*LinkModel, *StorageError) {
+	link, err := getLinkByAlias(this.db, alias)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewStorageError(NotFound, err.Error())
+		}
+		return nil, NewStorageError(AnyError, err.Error())
+	}
+	return link, nil
+}
+
 func insertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error) {
 	res, err := db.Exec("INSERT INTO links (alias, original_url) VALUES(?, ?)", alias, originalUrl)
 	if err != nil {
@@ -239,12 +271,57 @@ func insertLink(db *sql.DB, uid string, originalUrl string, name string, alias s
 	return linkModel, nil
 }
 
+func updateLink(db *sql.DB, uid string, originalUrl string, name string, alias string, lifetime int) (*LinkModel, error) {
+	res, err := db.Exec("UPDATE links SET alias = ?, original_url = ?, name = ?, lifetime_sec = ? WHERE uid = ?", alias, originalUrl, name, lifetime, uid)
+	if err != nil {
+		return nil, err
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if rowsAffected == 0 {
+		return nil, fmt.Errorf("no rows affected")
+	}
+	linkModel, err := getLinkByUid(db, uid)
+	if err != nil {
+		return nil, err
+	}
+	return linkModel, nil
+}
+
 func getLinkById(db *sql.DB, id int64) (*LinkModel, error) {
+	query := fmt.Sprintf("SELECT %s FROM links WHERE id = ?", LinkColumns)
+	row := db.QueryRow(query, id)
+	linkModel, err := scanLinkModel(row)
+	if err != nil {
+		return nil, err
+	}
+	return linkModel, nil
+}
+
+func getLinkByUid(db *sql.DB, uid string) (*LinkModel, error) {
+	query := fmt.Sprintf("SELECT %s FROM links WHERE uid = ?", LinkColumns)
+	row := db.QueryRow(query, uid)
+	linkModel, err := scanLinkModel(row)
+	if err != nil {
+		return nil, err
+	}
+	return linkModel, nil
+}
+
+func getLinkByAlias(db *sql.DB, alias string) (*LinkModel, error) {
+	query := fmt.Sprintf("SELECT %s FROM links WHERE alias = ?", LinkColumns)
+	row := db.QueryRow(query, alias)
+	linkModel, err := scanLinkModel(row)
+	if err != nil {
+		return nil, err
+	}
+	return linkModel, nil
+}
+
+func scanLinkModel(row *sql.Row) (*LinkModel, error) {
 	var linkModel LinkModel
-	row := db.QueryRow(
-		"SELECT id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE id = ?",
-		id,
-	)
 	err := row.Scan(
 		&linkModel.Id,
 		&linkModel.Uid,
@@ -255,10 +332,7 @@ func getLinkById(db *sql.DB, id int64) (*LinkModel, error) {
 		&linkModel.CreatedAt,
 		&linkModel.OwnerId,
 	)
-	if err != nil {
-		return nil, err
-	}
-	return &linkModel, nil
+	return &linkModel, err
 }
 
 func generateLinkUid() string {
