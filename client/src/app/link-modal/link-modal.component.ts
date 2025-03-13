@@ -1,4 +1,11 @@
-import { Component, effect, inject, model, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  model,
+  signal,
+  untracked,
+} from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -45,6 +52,7 @@ export class LinkModalComponent {
   public readonly origin = `${getOrigin()}/`;
   public readonly aliasType = signal<AliasType>('random');
   public readonly lifetimeOptions = LIFETIME_OPTIONS;
+  public readonly draftId = this._store.draftId;
 
   public readonly linkForm = this._fb.nonNullable.group({
     name: [''],
@@ -59,6 +67,19 @@ export class LinkModalComponent {
   );
 
   constructor() {
+    effect(() => {
+      if (!this.visible()) {
+        return;
+      }
+      untracked(() => {
+        const draftId = this.draftId();
+        if (draftId === null) {
+          this.clear();
+        } else {
+          this.setDraft(draftId);
+        }
+      });
+    });
     effect(() => {
       if (this.aliasType() === 'random') {
         this.linkForm.controls.alias.setValue(null);
@@ -82,5 +103,26 @@ export class LinkModalComponent {
     const body = formToLinkUpsert(formValue);
     this._store.createLink(body);
     this.visible.set(false);
+  }
+
+  public onApplyChanges() {
+    console.log('applying', this.linkForm.getRawValue());
+  }
+
+  private setDraft(draftId: string | null) {
+    const draft = this._store.findLink(draftId);
+    if (!draft) {
+      return;
+    }
+    this.linkForm.setValue({
+      name: draft.name,
+      originalUrl: draft.originalUrl,
+      alias: draft.alias,
+      lifetime: draft.lifetime,
+    });
+  }
+
+  private clear() {
+    this.linkForm.reset();
   }
 }

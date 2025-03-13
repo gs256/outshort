@@ -16,7 +16,7 @@ func ToLink(model LinkModel) Link {
 
 func NewLink(id int64, uid string, name string, originalUrl string, alias string, lifetime int, creationDate time.Time) Link {
 	return Link{
-		Uid:          uid,
+		Id:           uid,
 		Alias:        alias,
 		OriginalUrl:  originalUrl,
 		Name:         name,

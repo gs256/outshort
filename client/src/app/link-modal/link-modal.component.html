@@ -1,5 +1,5 @@
 <p-dialog
-  header="Make new short link"
+  [header]="draftId() === null ? 'Make new short link' : 'Edit short link'"
   [modal]="true"
   [(visible)]="visible"
   [style]="{ width: '25rem' }"
@@ -30,19 +30,21 @@
     </div>
     <div class="flex flex-col gap-2">
       <label for="alias" class="font-semibold">Choose alias</label>
-      <p-selectbutton
-        [options]="[
-          { label: 'Random alias', value: 'random' },
-          { label: 'Custom alias', value: 'custom' },
-        ]"
-        [allowEmpty]="false"
-        [(ngModel)]="aliasType"
-        optionLabel="label"
-        optionValue="value"
-        aria-labelledby="basic"
-      />
-      @if (aliasType() === "custom") {
-        <div class="flex items-center gap-2 text-muted-color mt-4">
+      @if (draftId() === null) {
+        <p-selectbutton
+          [options]="[
+            { label: 'Random alias', value: 'random' },
+            { label: 'Custom alias', value: 'custom' },
+          ]"
+          [allowEmpty]="false"
+          [(ngModel)]="aliasType"
+          optionLabel="label"
+          optionValue="value"
+          aria-labelledby="basic"
+        />
+      }
+      @if (aliasType() === "custom" || draftId() !== null) {
+        <div class="flex items-center gap-2 text-muted-color">
           <span>{{ origin }}</span>
           <input
             pInputText
@@ -71,16 +73,35 @@
       />
     </div>
   </div>
-  <div class="flex justify-end gap-2 pt-6">
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      (click)="visible.set(false)"
-    />
-    <p-button
-      label="Create"
-      (click)="onCreate()"
-      [disabled]="!(formValid$ | async)"
-    />
+  <div class="flex justify-between pt-6">
+    <div class="left">
+      @if (draftId() !== null) {
+        <p-button
+          label="Delete"
+          severity="danger"
+          (click)="visible.set(false)"
+        />
+      }
+    </div>
+    <div class="right flex gap-2">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        (click)="visible.set(false)"
+      />
+      @if (draftId() === null) {
+        <p-button
+          label="Create"
+          (click)="onCreate()"
+          [disabled]="!(formValid$ | async)"
+        />
+      } @else {
+        <p-button
+          label="Apply"
+          (click)="onApplyChanges()"
+          [disabled]="!(formValid$ | async)"
+        />
+      }
+    </div>
   </div>
 </p-dialog>

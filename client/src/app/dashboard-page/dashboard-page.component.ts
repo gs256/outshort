@@ -86,7 +86,8 @@ export class DashboardPageComponent {
   }
 
   public onRowClicked(link: Link) {
-    console.log('row clicked', link.alias);
+    this._linksStore.setDraft(link.id);
+    this.editorVisible.set(true);
   }
 
   private convertSeconds(seconds: number): string {

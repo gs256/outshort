@@ -36,7 +36,7 @@ type SignInRequest struct {
 }
 
 type Link struct {
-	Uid          string    `json:"uid"`
+	Id           string    `json:"id"`
 	Alias        string    `json:"alias"`
 	OriginalUrl  string    `json:"originalUrl"`
 	Name         string    `json:"name"`

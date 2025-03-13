@@ -16,6 +16,7 @@ import { LinkUpsert } from '../models/link-upsert';
 export const LinksStore = signalStore(
   withState({
     links: [] as Link[],
+    draftId: null as string | null,
     isLoading: false,
   }),
   withMethods((store, linksService = inject(LinksService)) => {
@@ -49,7 +50,17 @@ export const LinksStore = signalStore(
       ),
     );
 
-    return { load, createLink };
+    const setDraft = (draftId?: string | null) => {
+      patchState(store, { draftId: draftId ?? null });
+    };
+
+    const findLink = (linkId?: string | null) => {
+      return linkId
+        ? (store.links().find((item) => item.id === linkId) ?? null)
+        : null;
+    };
+
+    return { load, createLink, setDraft, findLink };
   }),
   withHooks({
     onInit(store) {
