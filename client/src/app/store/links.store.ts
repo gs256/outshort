@@ -50,6 +50,21 @@ export const LinksStore = signalStore(
       ),
     );
 
+    const updateLink = rxMethod<{ id: string; body: LinkUpsert }>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true })),
+        switchMap(({ id, body }) => {
+          return linksService.updateLink(id, body).pipe(
+            tapResponse({
+              next: () => load({}),
+              error: () => {},
+              finalize: () => patchState(store, { isLoading: false }),
+            }),
+          );
+        }),
+      ),
+    );
+
     const setDraft = (draftId?: string | null) => {
       patchState(store, { draftId: draftId ?? null });
     };
@@ -60,7 +75,7 @@ export const LinksStore = signalStore(
         : null;
     };
 
-    return { load, createLink, setDraft, findLink };
+    return { load, createLink, setDraft, findLink, updateLink };
   }),
   withHooks({
     onInit(store) {

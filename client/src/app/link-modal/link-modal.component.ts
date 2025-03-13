@@ -106,7 +106,12 @@ export class LinkModalComponent {
   }
 
   public onApplyChanges() {
-    console.log('applying', this.linkForm.getRawValue());
+    const draftId = this.draftId();
+    if (!draftId) return;
+    const formValue = this.linkForm.getRawValue();
+    const body = formToLinkUpsert(formValue);
+    this._store.updateLink({ id: draftId, body });
+    this.visible.set(false);
   }
 
   private setDraft(draftId: string | null) {
