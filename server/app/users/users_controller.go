@@ -8,22 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const AuthTokenLifetimeSec = 1 * 60 * 60
-
-type SignUpRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type SignInRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-func generateAuthToken() string {
-	return common.RandomString(32)
-}
-
 type UsersController struct {
 	storage *Storage
 }
@@ -55,8 +39,8 @@ func (this *UsersController) HandleSignIn(context *gin.Context) {
 		}
 		return
 	}
-	authToken := generateAuthToken()
-	err = this.storage.CreateAuthToken(authToken, userId, AuthTokenLifetimeSec)
+	authToken := common.GenerateAuthToken()
+	err = this.storage.CreateAuthToken(authToken, userId, common.AuthTokenLifetimeSec)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -90,8 +74,8 @@ func (this *UsersController) HandleSignUp(context *gin.Context) {
 			return
 		}
 	}
-	authToken := generateAuthToken()
-	err = this.storage.CreateAuthToken(authToken, userId, AuthTokenLifetimeSec)
+	authToken := common.GenerateAuthToken()
+	err = this.storage.CreateAuthToken(authToken, userId, common.AuthTokenLifetimeSec)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

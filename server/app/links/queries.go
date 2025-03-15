@@ -5,10 +5,6 @@ import (
 	"fmt"
 )
 
-type Scannable interface {
-	Scan(...any) error
-}
-
 const LinkColumns = "id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id"
 
 func InsertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error) {

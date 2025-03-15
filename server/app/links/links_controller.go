@@ -3,32 +3,9 @@ package links
 import (
 	"net/http"
 	"outshort/app/common"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-const AliasLength = 5
-
-type ShortenRequest struct {
-	Url string `json:"url"`
-}
-
-type UpsertLinkRequest struct {
-	Url      string `json:"url"`
-	Name     string `json:"name"`
-	Alias    string `json:"alias"`
-	Lifetime int    `json:"lifetime"`
-}
-
-type Link struct {
-	Id           string    `json:"id"`
-	Alias        string    `json:"alias"`
-	OriginalUrl  string    `json:"originalUrl"`
-	Name         string    `json:"name"`
-	Lifetime     int       `json:"lifetime"`
-	CreationDate time.Time `json:"creationDate"`
-}
 
 type LinksController struct {
 	storage *Storage
@@ -67,7 +44,7 @@ func (this *LinksController) HandleQuickShorten(context *gin.Context) {
 		return
 	}
 	for true {
-		alias := common.RandomString(AliasLength)
+		alias := common.GenerateLinkAlias()
 		_, err := this.storage.CreateQuickLink(originalUrl, alias)
 		if err != nil && err.Code == common.ErrorUniqueViolation {
 			continue
@@ -115,7 +92,7 @@ func (this *LinksController) HandleLinkCreate(context *gin.Context) {
 	}
 	if req.Alias == "" {
 		for true {
-			newAlias := common.RandomString(AliasLength)
+			newAlias := common.GenerateLinkAlias()
 			exists, err := this.storage.AliasAlreadyExists(req.Alias)
 			if err != nil {
 				context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})

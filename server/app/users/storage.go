@@ -9,12 +9,6 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-type UserModel struct {
-	Id       int64
-	Username string
-	Password string
-}
-
 type Storage struct {
 	db *sql.DB
 }

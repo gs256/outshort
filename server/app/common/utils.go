@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const StringGenerationAlphabet string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 func randRange(min int, max int) int {
 	return rand.IntN(max-min) + min
 }
@@ -45,5 +43,13 @@ func GetAuthTokenFromHeader(context *gin.Context) string {
 }
 
 func GenerateLinkUid() string {
-	return RandomString(16)
+	return RandomString(LinkUidLength)
+}
+
+func GenerateLinkAlias() string {
+	return RandomString(AliasLength)
+}
+
+func GenerateAuthToken() string {
+	return RandomString(AuthTokenLength)
 }
