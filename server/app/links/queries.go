@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+type Scannable interface {
+	Scan(...any) error
+}
+
 const LinkColumns = "id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id"
 
 func InsertQuickLink(db *sql.DB, originalUrl string, alias string) (int64, error) {
@@ -84,9 +88,51 @@ func GetLinkByAlias(db *sql.DB, alias string) (*LinkModel, error) {
 	return linkModel, nil
 }
 
-func ScanLinkModel(row *sql.Row) (*LinkModel, error) {
+func SelectLinksByOwner(db *sql.DB, ownerId int64) ([]LinkModel, error) {
+	query := fmt.Sprintf("SELECT %s FROM links WHERE owner_id = ?", LinkColumns)
+	rows, err := db.Query(query, ownerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var links []LinkModel
+	for rows.Next() {
+		link, err := ScanLinkModel(rows)
+		if err != nil {
+			return nil, err
+		}
+		links = append(links, *link)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return links, nil
+}
+
+func SelectOriginalUrl(db *sql.DB, alias string) (string, error) {
+	var originalURL string
+	err := db.QueryRow("SELECT original_url FROM links WHERE alias = ? LIMIT 1", alias).Scan(&originalURL)
+	if err != nil {
+		return "", err
+	}
+	return originalURL, nil
+}
+
+func SelectExistsAlias(db *sql.DB, alias string) (bool, error) {
+	var exists int
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM links WHERE alias = ?)", alias).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	if exists == 1 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func ScanLinkModel(scannable Scannable) (*LinkModel, error) {
 	var linkModel LinkModel
-	err := row.Scan(
+	err := scannable.Scan(
 		&linkModel.Id,
 		&linkModel.Uid,
 		&linkModel.Alias,

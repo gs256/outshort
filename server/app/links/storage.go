@@ -11,10 +11,6 @@ type Storage struct {
 	db *sql.DB
 }
 
-func generateLinkUid() string {
-	return common.RandomString(16)
-}
-
 func (this *Storage) Initialize(dbConnection *common.DbConnection) {
 	this.db = dbConnection.Database()
 }
@@ -28,9 +24,9 @@ func (this *Storage) CreateQuickLink(originalUrl string, alias string) (int64, *
 		return -1, common.NewStorageError(common.ErrorUniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
 
-	id, err := InsertQuickLink(this.db, originalUrl, alias)
-	if err != nil {
-		return -1, common.NewStorageError(common.ErrorAny, err.Error())
+	id, err_ := InsertQuickLink(this.db, originalUrl, alias)
+	if err_ != nil {
+		return -1, common.NewStorageError(common.ErrorAny, err_.Error())
 	}
 	return id, nil
 }
@@ -43,10 +39,10 @@ func (this *Storage) CreateLink(originalUrl string, name string, alias string, l
 	if alreadyExists {
 		return nil, common.NewStorageError(common.ErrorUniqueViolation, fmt.Sprintf("link with alias '%s' already exists", alias))
 	}
-	uid := generateLinkUid()
-	linkModel, err := InsertLink(this.db, uid, originalUrl, name, alias, lifetime, ownerId)
-	if err != nil {
-		return nil, common.NewStorageError(common.ErrorAny, err.Error())
+	uid := common.GenerateLinkUid()
+	linkModel, err_ := InsertLink(this.db, uid, originalUrl, name, alias, lifetime, ownerId)
+	if err_ != nil {
+		return nil, common.NewStorageError(common.ErrorAny, err_.Error())
 	}
 	return linkModel, nil
 }
@@ -60,58 +56,31 @@ func (this *Storage) UpdateLink(uid string, originalUrl string, name string, ali
 }
 
 func (this *Storage) GetAllLinks(ownerId int64) ([]LinkModel, *common.StorageError) {
-	rows, err := this.db.Query("SELECT id, uid, alias, original_url, name, lifetime_sec, created_at, owner_id FROM links WHERE owner_id = ?", ownerId)
+	links, err := SelectLinksByOwner(this.db, ownerId)
 	if err != nil {
-		return nil, common.NewStorageError(common.ErrorAny, "Query error")
-	}
-	defer rows.Close()
-	var links []LinkModel
-	for rows.Next() {
-		var link LinkModel
-		err := rows.Scan(
-			&link.Id,
-			&link.Uid,
-			&link.Alias,
-			&link.OriginalUrl,
-			&link.Name,
-			&link.LifetimeSec,
-			&link.CreatedAt,
-			&link.OwnerId,
-		)
-		if err != nil {
-			return nil, common.NewStorageError(common.ErrorAny, "Failed to scan row")
-		}
-		links = append(links, link)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, common.NewStorageError(common.ErrorAny, "Unknown error")
+		return nil, common.NewStorageError(common.ErrorAny, err.Error())
 	}
 	return links, nil
 }
 
 func (this *Storage) GetOriginalUrl(alias string) (string, *common.StorageError) {
-	var originalURL string
-	err := this.db.QueryRow("SELECT original_url FROM links WHERE alias = ? LIMIT 1", alias).Scan(&originalURL)
+	originalUrl, err := SelectOriginalUrl(this.db, alias)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", common.NewStorageError(common.ErrorNotFound, fmt.Sprintf("No record with alias = '%s'", alias))
+			return "", common.NewStorageError(common.ErrorNotFound, fmt.Sprintf("no record with alias = '%s'", alias))
 		} else {
 			return "", common.NewStorageError(common.ErrorAny, err.Error())
 		}
 	}
-	return originalURL, nil
+	return originalUrl, nil
 }
 
-func (this *Storage) AliasAlreadyExists(alias string) (bool, error) {
-	var exists int
-	err := this.db.QueryRow("SELECT EXISTS(SELECT 1 FROM links WHERE alias = ?)", alias).Scan(&exists)
+func (this *Storage) AliasAlreadyExists(alias string) (bool, *common.StorageError) {
+	exists, err := SelectExistsAlias(this.db, alias)
 	if err != nil {
-		return false, err
+		return false, common.NewStorageError(common.ErrorAny, err.Error())
 	}
-	if exists == 1 {
-		return true, nil
-	}
-	return false, nil
+	return exists, nil
 }
 
 func (this *Storage) FindLinkByUid(uid string) (*LinkModel, *common.StorageError) {

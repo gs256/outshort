@@ -43,3 +43,7 @@ func GetAuthTokenFromHeader(context *gin.Context) string {
 	token := strings.TrimSpace(split[1])
 	return token
 }
+
+func GenerateLinkUid() string {
+	return RandomString(16)
+}
