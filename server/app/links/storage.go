@@ -7,8 +7,6 @@ import (
 	"outshort/app/users"
 )
 
-const DbFile string = "database.db"
-
 type Storage struct {
 	db *sql.DB
 }
@@ -17,16 +15,8 @@ func generateLinkUid() string {
 	return common.RandomString(16)
 }
 
-func (this *Storage) Initialize() {
-	db, err := sql.Open("sqlite3", DbFile)
-	if err != nil {
-		panic(err.Error())
-	}
-	this.db = db
-}
-
-func (this *Storage) Dispose() {
-	defer this.db.Close()
+func (this *Storage) Initialize(dbConnection *common.DbConnection) {
+	this.db = dbConnection.Database()
 }
 
 func (this *Storage) CreateQuickLink(originalUrl string, alias string) (int64, *common.StorageError) {

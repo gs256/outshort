@@ -1,6 +1,7 @@
 package main
 
 import (
+	"outshort/app/common"
 	"outshort/app/links"
 	"outshort/app/users"
 
@@ -16,8 +17,11 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	usersController, disposeUsers := createUsersController()
-	linksController, disposeLinks := createLinksController()
+	dbConnection := common.NewDbConnection()
+	defer dbConnection.Close()
+
+	usersController := createUsersController(dbConnection)
+	linksController := createLinksController(dbConnection)
 
 	router.POST("/api/v1/auth/sign-in", usersController.HandleSignIn)
 	router.POST("/api/v1/auth/sign-up", usersController.HandleSignUp)
@@ -31,27 +35,24 @@ func main() {
 	router.GET("/api/v1/links/all", linksController.HandleLinksGetAll)
 
 	router.Run(":8249")
-
-	disposeUsers()
-	disposeLinks()
 }
 
-func createUsersController() (*users.UsersController, func()) {
+func createUsersController(dbConnection *common.DbConnection) *users.UsersController {
 	usersStorage := users.Storage{}
-	usersStorage.Initialize()
+	usersStorage.Initialize(dbConnection)
 
 	usersController := users.UsersController{}
 	usersController.Initialize(&usersStorage)
 
-	return &usersController, usersStorage.Dispose
+	return &usersController
 }
 
-func createLinksController() (*links.LinksController, func()) {
+func createLinksController(dbConnection *common.DbConnection) *links.LinksController {
 	linksStorage := links.Storage{}
-	linksStorage.Initialize()
+	linksStorage.Initialize(dbConnection)
 
 	linksController := links.LinksController{}
 	linksController.Initialize(&linksStorage)
 
-	return &linksController, linksStorage.Dispose
+	return &linksController
 }
