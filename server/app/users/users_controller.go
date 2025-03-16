@@ -12,8 +12,10 @@ type UsersController struct {
 	storage *Storage
 }
 
-func (this *UsersController) Initialize(storage *Storage) {
-	this.storage = storage
+func NewUsersController(storage *Storage) *UsersController {
+	return &UsersController{
+		storage: storage,
+	}
 }
 
 func (this *UsersController) HandleSignIn(context *gin.Context) {

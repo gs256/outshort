@@ -12,8 +12,10 @@ type LinksController struct {
 	storage *Storage
 }
 
-func (this *LinksController) Initialize(storage *Storage) {
-	this.storage = storage
+func NewLinksController(storage *Storage) *LinksController {
+	return &LinksController{
+		storage: storage,
+	}
 }
 
 func (this *LinksController) HandleRedirect(context *gin.Context) {

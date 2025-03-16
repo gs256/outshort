@@ -1,8 +1,7 @@
 package main
 
 import (
-	"outshort/app/common"
-	"outshort/app/links"
+	"outshort/app"
 	"outshort/app/users"
 
 	"github.com/gin-contrib/cors"
@@ -17,13 +16,12 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	dbConnection := common.NewDbConnection()
-	defer dbConnection.Close()
+	appContext := app.NewAppContext()
+	defer appContext.Dispose()
 
-	usersController, userStorage := createUsersController(dbConnection)
-	linksController := createLinksController(dbConnection)
-
-	authRequired := users.AuthRequired(userStorage)
+	authRequired := users.AuthRequired(appContext.UserStorage)
+	usersController := appContext.UsersController
+	linksController := appContext.LinksController
 
 	router.POST("/api/v1/auth/sign-in", usersController.HandleSignIn)
 	router.POST("/api/v1/auth/sign-up", usersController.HandleSignUp)
@@ -39,24 +37,4 @@ func main() {
 	router.GET("/api/v1/links/all", authRequired, linksController.HandleLinksGetAll)
 
 	router.Run(":8249")
-}
-
-func createUsersController(dbConnection *common.DbConnection) (*users.UsersController, *users.Storage) {
-	usersStorage := users.Storage{}
-	usersStorage.Initialize(dbConnection)
-
-	usersController := users.UsersController{}
-	usersController.Initialize(&usersStorage)
-
-	return &usersController, &usersStorage
-}
-
-func createLinksController(dbConnection *common.DbConnection) *links.LinksController {
-	linksStorage := links.Storage{}
-	linksStorage.Initialize(dbConnection)
-
-	linksController := links.LinksController{}
-	linksController.Initialize(&linksStorage)
-
-	return &linksController
 }

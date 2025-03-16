@@ -13,8 +13,10 @@ type Storage struct {
 	db *sql.DB
 }
 
-func (this *Storage) Initialize(dbConnection *common.DbConnection) {
-	this.db = dbConnection.Database()
+func NewStorage(dbConnection *common.DbConnection) *Storage {
+	return &Storage{
+		db: dbConnection.Database(),
+	}
 }
 
 func (this *Storage) CreateUser(username string, password string) (int64, *common.StorageError) {
@@ -56,7 +58,6 @@ func (this *Storage) AuthenticateUser(username string, password string) (int64, 
 	return -1, common.NewStorageError(common.ErrorInvalidCredentials, "Invalid credentials")
 }
 
-// TODO: fix duplication
 func (this *Storage) GetUserInfo(authToken string) (*UserModel, *common.StorageError) {
 	var user UserModel
 	err := this.db.QueryRow("SELECT users.* FROM users JOIN auth_tokens ON users.id = auth_tokens.user_id WHERE auth_tokens.token = ?", authToken).Scan(&user.Id, &user.Username, &user.Password)

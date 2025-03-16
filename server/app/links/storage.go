@@ -10,8 +10,10 @@ type Storage struct {
 	db *sql.DB
 }
 
-func (this *Storage) Initialize(dbConnection *common.DbConnection) {
-	this.db = dbConnection.Database()
+func NewStorage(dbConnection *common.DbConnection) *Storage {
+	return &Storage{
+		db: dbConnection.Database(),
+	}
 }
 
 func (this *Storage) CreateQuickLink(originalUrl string, alias string) (int64, *common.StorageError) {
