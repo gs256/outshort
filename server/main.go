@@ -20,31 +20,35 @@ func main() {
 	dbConnection := common.NewDbConnection()
 	defer dbConnection.Close()
 
-	usersController := createUsersController(dbConnection)
+	usersController, userStorage := createUsersController(dbConnection)
 	linksController := createLinksController(dbConnection)
+
+	authRequired := users.AuthRequired(userStorage)
 
 	router.POST("/api/v1/auth/sign-in", usersController.HandleSignIn)
 	router.POST("/api/v1/auth/sign-up", usersController.HandleSignUp)
 	router.POST("/api/v1/auth/sign-out", usersController.HandleSignOut)
-	router.GET("/api/v1/auth/user-info", usersController.HandleGetUserInfo)
+
+	router.GET("/api/v1/users/me", authRequired, usersController.HandleGetUserInfo)
 
 	router.GET("/api/v1/redirect/:alias", linksController.HandleRedirect)
 	router.POST("/api/v1/links/quick-shorten", linksController.HandleQuickShorten)
-	router.POST("/api/v1/links/create", linksController.HandleLinkCreate)
-	router.POST("/api/v1/links/update/:uid", linksController.HandleLinkUpdate)
-	router.GET("/api/v1/links/all", linksController.HandleLinksGetAll)
+
+	router.POST("/api/v1/links/create", authRequired, linksController.HandleLinkCreate)
+	router.POST("/api/v1/links/update/:uid", authRequired, linksController.HandleLinkUpdate)
+	router.GET("/api/v1/links/all", authRequired, linksController.HandleLinksGetAll)
 
 	router.Run(":8249")
 }
 
-func createUsersController(dbConnection *common.DbConnection) *users.UsersController {
+func createUsersController(dbConnection *common.DbConnection) (*users.UsersController, *users.Storage) {
 	usersStorage := users.Storage{}
 	usersStorage.Initialize(dbConnection)
 
 	usersController := users.UsersController{}
 	usersController.Initialize(&usersStorage)
 
-	return &usersController
+	return &usersController, &usersStorage
 }
 
 func createLinksController(dbConnection *common.DbConnection) *links.LinksController {

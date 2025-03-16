@@ -90,12 +90,7 @@ func (this *UsersController) HandleSignOut(context *gin.Context) {
 }
 
 func (this *UsersController) HandleGetUserInfo(context *gin.Context) {
-	token := common.GetAuthTokenFromHeader(context)
-	user, err := this.storage.GetUserInfo(token)
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	user := context.MustGet("user").(UserModel)
 	context.JSON(http.StatusOK, gin.H{
 		"username": user.Username,
 	})

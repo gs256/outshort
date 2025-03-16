@@ -3,6 +3,7 @@ package links
 import (
 	"net/http"
 	"outshort/app/common"
+	"outshort/app/users"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,12 +56,7 @@ func (this *LinksController) HandleQuickShorten(context *gin.Context) {
 }
 
 func (this *LinksController) HandleLinkCreate(context *gin.Context) {
-	token := common.GetAuthTokenFromHeader(context)
-	user, err := this.storage.GetUserInfo(token)
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	user := context.MustGet("user").(users.UserModel)
 	var req UpsertLinkRequest
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
@@ -128,13 +124,7 @@ func (this *LinksController) HandleLinkUpdate(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	// TODO: check owner
-	token := common.GetAuthTokenFromHeader(context)
-	user, err := this.storage.GetUserInfo(token)
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	user := context.MustGet("user").(users.UserModel)
 	var req UpsertLinkRequest
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body format"})
@@ -173,12 +163,7 @@ func (this *LinksController) HandleLinkUpdate(context *gin.Context) {
 }
 
 func (this *LinksController) HandleLinksGetAll(context *gin.Context) {
-	token := common.GetAuthTokenFromHeader(context)
-	user, err := this.storage.GetUserInfo(token)
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
+	user := context.MustGet("user").(users.UserModel)
 	linkModels, err := this.storage.GetAllLinks(user.Id)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Error getting user links"})

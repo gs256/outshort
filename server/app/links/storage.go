@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"outshort/app/common"
-	"outshort/app/users"
 )
 
 type Storage struct {
@@ -103,17 +102,4 @@ func (this *Storage) FindLinkByAlias(alias string) (*LinkModel, *common.StorageE
 		return nil, common.NewStorageError(common.ErrorAny, err.Error())
 	}
 	return link, nil
-}
-
-// TODO: fix duplication
-func (this *Storage) GetUserInfo(authToken string) (*users.UserModel, *common.StorageError) {
-	var user users.UserModel
-	err := this.db.QueryRow("SELECT users.* FROM users JOIN auth_tokens ON users.id = auth_tokens.user_id WHERE auth_tokens.token = ?", authToken).Scan(&user.Id, &user.Username, &user.Password)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, common.NewStorageError(common.ErrorNotFound, "User not found")
-		}
-		return nil, common.NewStorageError(common.ErrorAny, "Unknown error")
-	}
-	return &user, nil
 }

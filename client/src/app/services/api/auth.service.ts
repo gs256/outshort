@@ -73,7 +73,7 @@ export class AuthService {
       return throwError(() => new Error('No auth token'));
     }
     return this._http
-      .get(`${API_URL}/api/v1/auth/user-info`, {
+      .get(`${API_URL}/api/v1/users/me`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })
       .pipe(
