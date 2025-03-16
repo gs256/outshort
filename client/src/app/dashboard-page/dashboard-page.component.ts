@@ -10,6 +10,9 @@ import { TableModule } from 'primeng/table';
 import { LinksStore } from '../store/links.store';
 import { getShortUrl } from '../utils';
 import { LinkModalComponent } from '../link-modal/link-modal.component';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
+import { MenubarModule } from 'primeng/menubar';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -20,6 +23,8 @@ import { LinkModalComponent } from '../link-modal/link-modal.component';
     ButtonModule,
     TableModule,
     LinkModalComponent,
+    MenuModule,
+    MenubarModule,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
@@ -34,6 +39,24 @@ export class DashboardPageComponent {
   public readonly user = this._userStore.user;
   public readonly links = this._linksStore.links;
   public readonly getShortUrl = getShortUrl;
+  public readonly menuItems: MenuItem[] = [
+    {
+      label: 'Links',
+      icon: 'pi pi-link',
+    },
+    {
+      label: 'Pages',
+      icon: 'pi pi-book',
+    },
+    {
+      label: 'Analytics',
+      icon: 'pi pi-chart-bar',
+    },
+    {
+      label: 'Settings',
+      icon: 'pi pi-cog',
+    },
+  ];
 
   public navigateSignIn() {
     this._router.navigate(['app/auth'], {

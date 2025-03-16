@@ -20,10 +20,11 @@
     </p-card>
   } @else {
     <div
-      class="px-6 flex flex-col items-stretch"
+      class="flex flex-col gap-2"
       [style]="{ width: '100%', maxWidth: '1100px' }"
     >
-      <p-card header="My links">
+      <p-menubar [model]="menuItems" />
+      <p-card header="My links" class="w-full">
         <ng-template #subtitle>Complete list of your short links</ng-template>
         <div class="flex items-center justify-start py-4">
           <p-button (onClick)="editorVisible.set(true)">
