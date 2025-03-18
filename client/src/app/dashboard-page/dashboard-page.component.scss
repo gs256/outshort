@@ -1,5 +1,12 @@
 :host {
-  .menubar-container {
-    width: var(--content-width);
+  $dashboard-width: 1100px;
+
+  .menubar-wrapper {
+    width: $dashboard-width;
+  }
+
+  .dashboard-wrapper {
+    max-width: $dashboard-width;
+    width: 100%;
   }
 }
