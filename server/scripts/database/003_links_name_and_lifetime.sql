@@ -1,5 +1,0 @@
-ALTER TABLE links
-ADD COLUMN name TEXT NOT NULL DEFAULT '';
-
-ALTER TABLE links
-ADD COLUMN lifetime_sec INTEGER NOT NULL DEFAULT 0 CHECK (lifetime_sec >= 0);

@@ -1,3 +1,4 @@
 env/*
 !*.gitkeep
 dist
+.env
