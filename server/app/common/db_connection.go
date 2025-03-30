@@ -2,7 +2,7 @@ package common
 
 import "database/sql"
 
-const DbFile string = "database.db"
+const DbFile string = "env/database.db"
 
 type DbConnection struct {
 	db *sql.DB
