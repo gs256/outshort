@@ -6,6 +6,7 @@ import { LinksStore } from '../../store/links.store';
 import { Link } from '../../models/link';
 import { getShortUrl } from '../../utils';
 import { LinkModalComponent } from '../../link-modal/link-modal.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-dashboard-links',
@@ -15,6 +16,7 @@ import { LinkModalComponent } from '../../link-modal/link-modal.component';
 })
 export class DashboardLinksComponent {
   private readonly _linksStore = inject(LinksStore);
+  private readonly _clipboard = inject(Clipboard);
 
   public readonly editorVisible = signal(false);
   public readonly links = this._linksStore.links;
@@ -23,6 +25,11 @@ export class DashboardLinksComponent {
   public onRowClicked(link: Link) {
     this._linksStore.setDraft(link.id);
     this.editorVisible.set(true);
+  }
+
+  public onCopyLink(event: Event, link: Link) {
+    event.stopPropagation();
+    this._clipboard.copy(getShortUrl(link.alias));
   }
 
   public getExpirationString(link: Link) {

@@ -20,7 +20,12 @@
         <ng-template #body let-item>
             <tr class="relative cursor-pointer" (click)="onRowClicked(item)">
                 <td>{{ item.name }}</td>
-                <td>{{ getShortUrl(item.alias) }}</td>
+                <td>
+                    <div class="flex gap-2 items-center">
+                        {{ getShortUrl(item.alias) }}
+                        <p-button icon="pi pi-copy" size="small" outlined (onClick)="onCopyLink($event, item)" />
+                    </div>
+                </td>
                 <td>{{ item.originalUrl }}</td>
                 <td>{{ lifetimeToString(item.lifetime) }}</td>
                 <td>{{ getExpirationString(item) }}</td>
