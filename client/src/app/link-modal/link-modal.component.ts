@@ -92,10 +92,6 @@ export class LinkModalComponent {
         this.linkForm.reset();
       }
     });
-    this.linkForm.valueChanges.subscribe((value) => {
-      const formValue = this.linkForm.getRawValue();
-      console.log(formToLinkUpsert(formValue));
-    });
   }
 
   public onCreate() {
