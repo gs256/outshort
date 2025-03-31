@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+    client:
+        build: ./client
+        ports:
+            - "4200:4200"
+
+    server:
+        build: ./server
+        ports:
+            - "8249:8249"
