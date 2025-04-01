@@ -57,6 +57,34 @@ $ sudo chmod +x ./scripts/local-deploy.sh
 $ ./scripts/local-deploy.sh
 ```
 
+This will create a copy of the development environment inside the `deploy` directory
+
+## Development
+
+**Start server**
+
+```sh
+$ cd server
+
+# Install dependencies
+$ go mod install
+
+$ go run .
+```
+
+**Start client**
+
+```sh
+$ cd client
+
+# Install dependencies
+$ npm i
+
+$ npm start
+```
+
+After that open `http://localhost:4200` in your browser
+
 ## License
 
 MIT
