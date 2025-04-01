@@ -10,3 +10,5 @@ services:
         build: ./server
         ports:
             - "8249:8249"
+        volumes:
+            - ./server/env:/app/env
