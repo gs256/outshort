@@ -65,10 +65,6 @@ This will create a copy of the development environment inside the `deploy` direc
 
 ```sh
 $ cd server
-
-# Install dependencies
-$ go mod install
-
 $ go run .
 ```
 
