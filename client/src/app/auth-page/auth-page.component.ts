@@ -53,8 +53,8 @@ export class AuthPageComponent {
   public readonly form = this._fb.nonNullable.group(
     {
       username: ['', [Validators.required, Validators.minLength(2)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      repeat: [''],
+      password: ['', [Validators.required, Validators.minLength(1)]],
+      repeat: ['', [Validators.required]],
     },
     { validators: [this.matchPasswordValidator(this.formType)] },
   );
@@ -122,7 +122,8 @@ export class AuthPageComponent {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.get('password')?.value;
       const repeat = control.get('repeat')?.value;
-      if (password === repeat || formType() === 'sign-in') {
+      const bothNonEmpty = Boolean(password) && Boolean(repeat);
+      if (password === repeat || !bothNonEmpty || formType() === 'sign-in') {
         return null;
       }
       return { passwordMismatch: true };

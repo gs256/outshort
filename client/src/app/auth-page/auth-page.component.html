@@ -17,6 +17,9 @@
               placeholder="John_123"
               formControlName="username"
             />
+            @if (form.controls.username.hasError("minlength")) {
+              <small class="text-red-500">Username is too short</small>
+            }
           </div>
           <div class="flex flex-col gap-1">
             <label for="password">Password</label>
@@ -27,6 +30,9 @@
               placeholder="●●●●"
               formControlName="password"
             />
+            @if (form.controls.password.hasError("minlength")) {
+              <small class="text-red-500">Password is too short</small>
+            }
           </div>
           @if (formType() === "sign-up") {
             <div class="flex flex-col gap-1">
@@ -39,6 +45,9 @@
                 formControlName="repeat"
               />
             </div>
+            @if (form.hasError("passwordMismatch")) {
+              <small class="text-red-500">Passwords don't match</small>
+            }
           }
         </div>
       </form>
