@@ -9,6 +9,7 @@ import { DashboardLinksComponent } from './dashboard/dashboard-links/dashboard-l
 import { DashboardPagesComponent } from './dashboard/dashboard-pages/dashboard-pages.component';
 import { DashboardAnalyticsComponent } from './dashboard/dashboard-analytics/dashboard-analytics.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
+import { userResolver } from './resolvers/user.resolver';
 
 export const routes: Routes = [
   {
@@ -19,10 +20,12 @@ export const routes: Routes = [
   {
     path: 'app',
     component: HomePageComponent,
+    resolve: { user: userResolver },
   },
   {
     path: 'app/dashboard',
     component: DashboardPageComponent,
+    resolve: { user: userResolver },
     children: [
       {
         path: 'links',
@@ -49,6 +52,7 @@ export const routes: Routes = [
   {
     path: 'app/about',
     component: AboutPageComponent,
+    resolve: { user: userResolver },
   },
   {
     path: 'app/auth',
@@ -57,6 +61,7 @@ export const routes: Routes = [
   {
     path: 'app/user',
     component: UserPageComponent,
+    resolve: { user: userResolver },
   },
   {
     path: ':alias',

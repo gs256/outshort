@@ -16,16 +16,16 @@ import { storage } from '../storage';
 type UserState = {
   user: User | undefined;
   isLoading: boolean;
-};
-
-const initialState: UserState = {
-  user: undefined,
-  isLoading: false,
+  initialized: boolean;
 };
 
 export const UserStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState<UserState>({
+    user: undefined,
+    isLoading: false,
+    initialized: false,
+  }),
   withMethods((store, authService = inject(AuthService)) => {
     const load = rxMethod(
       pipe(
@@ -35,7 +35,11 @@ export const UserStore = signalStore(
             tapResponse({
               next: (user) => patchState(store, { user }),
               error: () => {},
-              finalize: () => patchState(store, { isLoading: false }),
+              finalize: () =>
+                patchState(store, {
+                  isLoading: false,
+                  initialized: true,
+                }),
             }),
           );
         }),

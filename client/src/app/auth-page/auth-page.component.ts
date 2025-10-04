@@ -35,7 +35,7 @@ const DEFAULT_TYPE: FormType = 'sign-up';
     ReactiveFormsModule,
   ],
   templateUrl: './auth-page.component.html',
-  styleUrl: './auth-page.component.scss',
+  styleUrl: './auth-page.component.css',
 })
 export class AuthPageComponent {
   private readonly _route = inject(ActivatedRoute);

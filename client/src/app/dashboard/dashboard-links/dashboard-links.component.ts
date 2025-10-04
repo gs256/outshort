@@ -12,7 +12,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
   selector: 'app-dashboard-links',
   imports: [CardModule, ButtonModule, TableModule, LinkModalComponent],
   templateUrl: './dashboard-links.component.html',
-  styleUrl: './dashboard-links.component.scss',
+  styleUrl: './dashboard-links.component.css',
 })
 export class DashboardLinksComponent {
   private readonly _linksStore = inject(LinksStore);

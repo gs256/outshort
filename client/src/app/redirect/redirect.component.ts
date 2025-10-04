@@ -6,7 +6,7 @@ import { API_URL } from '../constants';
   selector: 'app-redirect',
   imports: [],
   templateUrl: './redirect.component.html',
-  styleUrl: './redirect.component.scss',
+  styleUrl: './redirect.component.css',
 })
 export class RedirectComponent {
   private route = inject(ActivatedRoute);

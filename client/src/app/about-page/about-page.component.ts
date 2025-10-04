@@ -8,7 +8,7 @@ import { VERSION } from '../constants';
   selector: 'app-about-page',
   imports: [PageWrapperComponent, MenubarComponent, CardModule],
   templateUrl: './about-page.component.html',
-  styleUrl: './about-page.component.scss',
+  styleUrl: './about-page.component.css',
 })
 export class AboutPageComponent {
   public readonly version = VERSION;

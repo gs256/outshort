@@ -4,13 +4,14 @@ import { MenubarComponent } from '../../menubar/menubar.component';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { UserStore } from '../../store/user.store';
-import { Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { Link } from '../../models/link';
 import { TableModule } from 'primeng/table';
 import { LinksStore } from '../../store/links.store';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
+import { getResolvedUser } from '../../utils/get-resolved-user';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -25,14 +26,14 @@ import { MenubarModule } from 'primeng/menubar';
     RouterOutlet,
   ],
   templateUrl: './dashboard-page.component.html',
-  styleUrl: './dashboard-page.component.scss',
+  styleUrl: './dashboard-page.component.css',
   providers: [LinksStore],
 })
 export class DashboardPageComponent {
-  private readonly _userStore = inject(UserStore);
+  private readonly _route = inject(ActivatedRoute);
   private readonly _router = inject(Router);
 
-  public readonly user = this._userStore.user;
+  public readonly user = getResolvedUser(this._route);
   public readonly menuItems: MenuItem[] = [
     {
       label: 'Links',

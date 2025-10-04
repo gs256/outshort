@@ -6,6 +6,6 @@ import { ComingSoonComponent } from '../../coming-soon/coming-soon.component';
   selector: 'app-dashboard-analytics',
   imports: [CardModule, ComingSoonComponent],
   templateUrl: './dashboard-analytics.component.html',
-  styleUrl: './dashboard-analytics.component.scss',
+  styleUrl: './dashboard-analytics.component.css',
 })
 export class DashboardAnalyticsComponent {}

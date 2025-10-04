@@ -1,11 +1,6 @@
 @import "primeicons/primeicons.css";
-@import "reset.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer reset, primeng;
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
 
 * {
   font-family: "Inter", sans-serif;
@@ -14,15 +9,14 @@
 body {
   --p-card-title-font-weight: 600;
   --content-width: 700px;
+  --outshort-wide-width: 1100px;
 }
 
-$outshort-wide-width: 1100px;
-
 .outshort-wide-menubar {
-  width: $outshort-wide-width;
+  width: var(--outshort-wide-width);
 }
 
 .outshort-wide-content {
-  max-width: $outshort-wide-width;
+  max-width: var(--outshort-wide-width);
   width: 100%;
 }

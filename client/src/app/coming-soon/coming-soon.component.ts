@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-coming-soon',
   imports: [],
   templateUrl: './coming-soon.component.html',
-  styleUrl: './coming-soon.component.scss'
+  styleUrl: './coming-soon.component.css',
 })
-export class ComingSoonComponent {
-
-}
+export class ComingSoonComponent {}
