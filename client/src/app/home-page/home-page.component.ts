@@ -35,7 +35,7 @@ import { getShortUrl } from '../utils';
     RouterLink,
   ],
   templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss',
+  styleUrl: './home-page.component.css',
   providers: [MessageService],
 })
 export class HomePageComponent {

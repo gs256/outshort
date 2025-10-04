@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-user-page',
   imports: [PageWrapperComponent, MenubarComponent, CardModule],
   templateUrl: './user-page.component.html',
-  styleUrl: './user-page.component.scss',
+  styleUrl: './user-page.component.css',
 })
 export class UserPageComponent {
   private readonly _userStore = inject(UserStore);

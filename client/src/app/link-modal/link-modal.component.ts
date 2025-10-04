@@ -42,7 +42,7 @@ type AliasType = 'random' | 'custom';
     AsyncPipe,
   ],
   templateUrl: './link-modal.component.html',
-  styleUrl: './link-modal.component.scss',
+  styleUrl: './link-modal.component.css',
 })
 export class LinkModalComponent {
   private readonly _fb = inject(FormBuilder);

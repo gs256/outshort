@@ -5,7 +5,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-page-wrapper',
   imports: [NgClass],
   templateUrl: './page-wrapper.component.html',
-  styleUrl: './page-wrapper.component.scss',
+  styleUrl: './page-wrapper.component.css',
 })
 export class PageWrapperComponent {
   public readonly fullWidth = input(false);

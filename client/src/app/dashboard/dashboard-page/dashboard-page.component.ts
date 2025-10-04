@@ -26,7 +26,7 @@ import { getResolvedUser } from '../../utils/get-resolved-user';
     RouterOutlet,
   ],
   templateUrl: './dashboard-page.component.html',
-  styleUrl: './dashboard-page.component.scss',
+  styleUrl: './dashboard-page.component.css',
   providers: [LinksStore],
 })
 export class DashboardPageComponent {

@@ -11,7 +11,7 @@ import { ChipModule } from 'primeng/chip';
   selector: 'app-menubar',
   imports: [MenubarModule, RouterLink, ButtonModule, ChipModule],
   templateUrl: './menubar.component.html',
-  styleUrl: './menubar.component.scss',
+  styleUrl: './menubar.component.css',
 })
 export class MenubarComponent {
   private readonly _router = inject(Router);
