@@ -1,7 +1,15 @@
 .light-theme {
-  --contrast-bg: #ffffff;
+  --color-contrast-bg: #ffffff;
+  --color-header: var(--p-card-color);
+  --color-main-text: var(--p-card-color);
+  --color-secondary-text: var(--p-card-subtitle-color);
+  --color-background-100: var(--p-slate-100);
 }
 
 .dark-theme {
-  --contrast-bg: var(--color-gray-800);
+  --color-contrast-bg: var(--color-gray-800);
+  --color-header: var(--color-gray-100);
+  --color-main-text: var(--color-gray-100);
+  --color-secondary-text: var(--color-gray-500);
+  --color-background-100: var(--color-gray-900);
 }

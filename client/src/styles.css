@@ -5,7 +5,10 @@
 @custom-variant dark (&:where(.dark-theme, .dark-theme *));
 
 @theme {
-  --color-contrast-bg: var(--contrast-bg);
+  --color-contrast-bg: var(--color-contrast-bg);
+  --color-header: var(--color-header);
+  --color-main-text: var(--color-main-text);
+  --color-secondary-text: var(--color-secondary-text);
 }
 
 * {
@@ -25,4 +28,16 @@ body {
 .outshort-wide-content {
   max-width: var(--outshort-wide-width);
   width: 100%;
+}
+
+.common-card {
+  background-color: var(--color-contrast-bg);
+  color: var(--color-main-text);
+
+  .p-card-title {
+    color: var(--color-header);
+  }
+  .p-card-subtitle {
+    color: var(--color-secondary-text);
+  }
 }
