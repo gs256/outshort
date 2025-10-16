@@ -1,0 +1,7 @@
+.light-theme {
+  --contrast-bg: #ffffff;
+}
+
+.dark-theme {
+  --contrast-bg: var(--color-gray-800);
+}
