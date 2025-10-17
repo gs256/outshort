@@ -5,6 +5,15 @@
     </a>
   </ng-template>
   <ng-template #end>
+    <p-button
+      icon="pi pi-palette"
+      [rounded]="true"
+      size="small"
+      class="pr-3"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="toggleTheme()"
+    />
     @if (!loading()) {
       @if (user() === undefined) {
         <p-button

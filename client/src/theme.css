@@ -1,4 +1,5 @@
-.light-theme {
+/* Light theme by default */
+html {
   --color-page-background: var(--p-surface-100);
 }
 

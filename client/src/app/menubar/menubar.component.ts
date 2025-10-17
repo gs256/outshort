@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
 import { UserStore } from '../store/user.store';
 import { ChipModule } from 'primeng/chip';
+import { AppThemeService } from '../services/app-theme.service';
 
 @Component({
   selector: 'app-menubar',
@@ -15,6 +16,7 @@ import { ChipModule } from 'primeng/chip';
 export class MenubarComponent {
   private readonly _router = inject(Router);
   private readonly _userStore = inject(UserStore);
+  private readonly _appTheme = inject(AppThemeService);
 
   public readonly loading = this._userStore.isLoading;
   public readonly user = this._userStore.user;
@@ -43,5 +45,9 @@ export class MenubarComponent {
 
   public navigateUser() {
     this._router.navigate(['app/user']);
+  }
+
+  public toggleTheme() {
+    this._appTheme.toggleTheme();
   }
 }
