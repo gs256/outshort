@@ -1,6 +1,6 @@
 <app-page-wrapper>
   <app-menubar></app-menubar>
-  <p-card header="Welcome to Outshort!" class="intro-card common-card">
+  <p-card header="Welcome to Outshort!" class="intro-card">
     <p class="m-0">
       Outshort is a simple, open-source, self-hosted URL shortener that makes
       long links short, clean, and easy to share. Customize links, track clicks,
@@ -24,7 +24,7 @@
       }
     </ng-template>
   </p-card>
-  <p-card header="Quick shorten" class="common-card">
+  <p-card header="Quick shorten">
     <ng-template #subtitle>Enter your long link below</ng-template>
     <div>
       <div class="flex flex-row gap-2 mt-1">
@@ -59,10 +59,10 @@
   </p-card>
 
   @if (true) {
-    <p-card header="Short link" class="relative common-card">
+    <p-card header="Short link" class="relative">
       @if (!shortened()) {
         <div
-          class="bg-white/75 dark:bg-gray-900/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
+          class="bg-white/75 dark:bg-surface-800/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
         ></div>
       }
       <p-tabs value="0">

@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--color-background-100);
+  background-color: var(--color-page-background);
 
   .page-wrapper {
     padding-top: 1rem;
