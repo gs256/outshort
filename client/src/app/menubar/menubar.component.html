@@ -1,10 +1,19 @@
-<p-menubar [model]="menuItems" class="bg-contrast-bg">
+<p-menubar [model]="menuItems">
   <ng-template #start>
     <a [routerLink]="'/'">
       <span class="logo text-lg">Outshort</span>
     </a>
   </ng-template>
   <ng-template #end>
+    <p-button
+      icon="pi pi-palette"
+      [rounded]="true"
+      size="small"
+      class="pr-3"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="toggleTheme()"
+    />
     @if (!loading()) {
       @if (user() === undefined) {
         <p-button
