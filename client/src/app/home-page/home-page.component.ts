@@ -47,6 +47,7 @@ export class HomePageComponent {
   private readonly _historyService = inject(ShortLinkHistoryService);
   private readonly _router = inject(Router);
   private readonly _userStore = inject(UserStore);
+  private readonly _message = inject(MessageService);
 
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
@@ -72,7 +73,6 @@ export class HomePageComponent {
     }
     const originalUrl = this.originalUrl().trim();
     if (originalUrl.length == 0) {
-      alert('Enter your url');
       return;
     }
     this.processing.set(true);
@@ -83,7 +83,11 @@ export class HomePageComponent {
         this.processing.set(false);
       },
       error: (error: Error) => {
-        alert(error.message);
+        this._message.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Invalid url',
+        });
         this.processing.set(false);
       },
     });

@@ -38,7 +38,7 @@
           severity="warn"
           label="Shorten"
           (onClick)="onShortenClicked()"
-          [disabled]="processing()"
+          [disabled]="processing() || originalUrl().length === 0"
         ></p-button>
       </div>
     </div>
@@ -128,3 +128,5 @@
     </p-card>
   }
 </app-page-wrapper>
+
+<p-toast position="top-center" />
