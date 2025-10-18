@@ -1,27 +1,27 @@
-<app-page-wrapper [fullWidth]="true" customClass="items-center">
-  <div class="outshort-wide-menubar">
-    <app-menubar></app-menubar>
-  </div>
-  @if (user === undefined) {
-    <p-card header="Dashboard">
-      <p class="m-0 text-muted-color">
-        You have to sign in to get acess to the dashboard
-      </p>
-      <ng-template #footer>
-        <div class="flex items-center gap-4 mt-1 text-muted-color">
-          <p-button
-            label="Sign in"
-            severity="success"
-            (onClick)="navigateSignIn()"
-          />
-          <p-button label="Sign up" (onClick)="navigateSignUp()" />
-        </div>
-      </ng-template>
-    </p-card>
-  } @else {
-    <div class="outshort-wide-content flex flex-col gap-2">
-      <p-menubar [model]="menuItems" />
-      <router-outlet />
-    </div>
-  }
+<app-page-wrapper>
+  <app-menubar></app-menubar>
+  <app-page-content-wrapper variant="wide">
+    @if (user === undefined) {
+      <p-card header="Dashboard">
+        <p class="m-0 text-muted-color">
+          You have to sign in to get acess to the dashboard
+        </p>
+        <ng-template #footer>
+          <div class="flex items-center gap-4 mt-1 text-muted-color">
+            <p-button
+              label="Sign in"
+              severity="success"
+              (onClick)="navigateSignIn()"
+            />
+            <p-button label="Sign up" (onClick)="navigateSignUp()" />
+          </div>
+        </ng-template>
+      </p-card>
+    } @else {
+      <div class="outshort-wide-content flex flex-col gap-2">
+        <p-menubar [model]="menuItems" />
+        <router-outlet />
+      </div>
+    }
+  </app-page-content-wrapper>
 </app-page-wrapper>

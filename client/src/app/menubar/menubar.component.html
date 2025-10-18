@@ -1,39 +1,44 @@
-<p-menubar [model]="menuItems">
-  <ng-template #start>
-    <a [routerLink]="'/'">
-      <span class="logo text-lg">Outshort</span>
-    </a>
-  </ng-template>
-  <ng-template #end>
-    <p-button
-      icon="pi pi-palette"
-      [rounded]="true"
-      size="small"
-      class="pr-3"
-      [outlined]="true"
-      severity="secondary"
-      (onClick)="toggleTheme()"
-    />
-    @if (!loading()) {
-      @if (user() === undefined) {
-        <p-button
-          label="Sign up"
-          variant="outlined"
-          size="small"
-          (onClick)="navigateAuth()"
-        />
-      } @else {
-        <a [routerLink]="'/app/user'">
-          <p-chip class="!py-0 !pl-0 !pr-4">
-            <span
-              class="bg-slate-400 text-primary-contrast rounded-full w-8 h-8 flex items-center justify-center"
-            >
-              {{ user()?.username?.[0]?.toUpperCase() }}
-            </span>
-            <span>{{ user()?.username }}</span>
-          </p-chip>
-        </a>
+<div class="flex justify-center bg-menubar-background">
+  <p-menubar
+    [model]="menuItems"
+    class="m-0 border-none rounded-none bg-transparent"
+  >
+    <ng-template #start>
+      <a [routerLink]="'/'">
+        <span class="logo text-lg">Outshort</span>
+      </a>
+    </ng-template>
+    <ng-template #end>
+      <p-button
+        icon="pi pi-palette"
+        [rounded]="true"
+        size="small"
+        class="pr-3"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="toggleTheme()"
+      />
+      @if (!loading()) {
+        @if (user() === undefined) {
+          <p-button
+            label="Sign up"
+            variant="outlined"
+            size="small"
+            (onClick)="navigateAuth()"
+          />
+        } @else {
+          <a [routerLink]="'/app/user'">
+            <p-chip class="!py-0 !pl-0 !pr-4">
+              <span
+                class="bg-slate-400 text-primary-contrast rounded-full w-8 h-8 flex items-center justify-center"
+              >
+                {{ user()?.username?.[0]?.toUpperCase() }}
+              </span>
+              <span>{{ user()?.username }}</span>
+            </p-chip>
+          </a>
+        }
       }
-    }
-  </ng-template>
-</p-menubar>
+    </ng-template>
+  </p-menubar>
+</div>

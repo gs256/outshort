@@ -1,8 +1,10 @@
 /* Light theme by default */
 html {
   --color-page-background: var(--p-surface-100);
+  --color-menubar-background: white;
 }
 
 .dark-theme {
   --color-page-background: var(--p-surface-800);
+  --color-menubar-background: var(--p-content-background);
 }

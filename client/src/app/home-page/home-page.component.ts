@@ -17,6 +17,8 @@ import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
 import { UserStore } from '../store/user.store';
 import { getShortUrl } from '../utils';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { PageContentWrapperComponent } from '../page-content-wrapper/page-content-wrapper.component';
 
 @Component({
   selector: 'app-home-page',
@@ -33,6 +35,8 @@ import { getShortUrl } from '../utils';
     MenubarComponent,
     PageWrapperComponent,
     RouterLink,
+    SelectButtonModule,
+    PageContentWrapperComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
@@ -45,13 +49,21 @@ export class HomePageComponent {
   private readonly _historyService = inject(ShortLinkHistoryService);
   private readonly _router = inject(Router);
   private readonly _userStore = inject(UserStore);
+  private readonly _message = inject(MessageService);
 
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
   public readonly originalUrl = signal('');
+  public readonly quickLinkLifetime = signal('1h');
   public readonly history = this._historyService.records;
   public readonly user = this._userStore.user;
   public readonly getShortUrl = getShortUrl;
+
+  public readonly lifetimeOptions = [
+    { label: '1 hour', value: '1h' },
+    { label: '1 day', value: '1d' },
+    { label: '1 week', value: '1w' },
+  ];
 
   public readonly shortened = computed(
     () => this.shortLink().trim().length > 0,
@@ -63,7 +75,6 @@ export class HomePageComponent {
     }
     const originalUrl = this.originalUrl().trim();
     if (originalUrl.length == 0) {
-      alert('Enter your url');
       return;
     }
     this.processing.set(true);
@@ -74,7 +85,11 @@ export class HomePageComponent {
         this.processing.set(false);
       },
       error: (error: Error) => {
-        alert(error.message);
+        this._message.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Invalid url',
+        });
         this.processing.set(false);
       },
     });

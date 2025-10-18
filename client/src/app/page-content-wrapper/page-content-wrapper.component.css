@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  justify-content: center;
+
+  .content {
+    &.wide {
+      width: var(--page-wide-width);
+    }
+    &.narrow {
+      width: var(--page-narrow-width);
+    }
+  }
+}

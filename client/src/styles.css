@@ -6,23 +6,24 @@
 
 @theme {
   --color-page-background: var(--color-page-background);
+  --color-menubar-background: var(--color-menubar-background);
 }
 
 * {
   font-family: "Inter", sans-serif;
 }
 
-body {
+:root {
   --p-card-title-font-weight: 600;
-  --content-width: 700px;
-  --outshort-wide-width: 1100px;
+  --page-narrow-width: 800px;
+  --page-wide-width: 1100px;
 }
 
 .outshort-wide-menubar {
-  width: var(--outshort-wide-width);
+  width: var(--page-wide-width);
 }
 
 .outshort-wide-content {
-  max-width: var(--outshort-wide-width);
+  max-width: var(--page-wide-width);
   width: 100%;
 }

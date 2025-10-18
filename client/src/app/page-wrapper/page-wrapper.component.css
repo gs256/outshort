@@ -6,14 +6,9 @@
   background-color: var(--color-page-background);
 
   .page-wrapper {
-    padding-top: 1rem;
     gap: 1rem;
     display: flex;
     flex-direction: column;
-    width: var(--content-width);
-  }
-
-  .full-width {
     width: 100%;
   }
 }
