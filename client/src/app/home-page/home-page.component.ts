@@ -17,6 +17,7 @@ import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
 import { UserStore } from '../store/user.store';
 import { getShortUrl } from '../utils';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-home-page',
@@ -33,6 +34,7 @@ import { getShortUrl } from '../utils';
     MenubarComponent,
     PageWrapperComponent,
     RouterLink,
+    SelectButtonModule,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
@@ -49,9 +51,16 @@ export class HomePageComponent {
   public readonly processing = signal(false);
   public readonly shortLink = signal('');
   public readonly originalUrl = signal('');
+  public readonly quickLinkLifetime = signal('1h');
   public readonly history = this._historyService.records;
   public readonly user = this._userStore.user;
   public readonly getShortUrl = getShortUrl;
+
+  public readonly lifetimeOptions = [
+    { label: '1 hour', value: '1h' },
+    { label: '1 day', value: '1d' },
+    { label: '1 week', value: '1w' },
+  ];
 
   public readonly shortened = computed(
     () => this.shortLink().trim().length > 0,

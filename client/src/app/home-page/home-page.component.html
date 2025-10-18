@@ -42,6 +42,14 @@
         ></p-button>
       </div>
     </div>
+    <p-selectbutton
+      [options]="lifetimeOptions"
+      optionLabel="label"
+      optionValue="value"
+      aria-labelledby="basic"
+      class="pt-3"
+      [(ngModel)]="quickLinkLifetime"
+    />
     <ng-template #footer>
       @if (user() !== undefined) {
         <div class="pt-2">
@@ -58,7 +66,7 @@
     </ng-template>
   </p-card>
 
-  @if (true) {
+  @if (shortened()) {
     <p-card header="Short link" class="relative">
       @if (!shortened()) {
         <div
