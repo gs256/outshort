@@ -4,4 +4,8 @@
     color: var(--p-orange-500);
     margin-right: 1rem;
   }
+
+  ::ng-deep .p-menubar {
+    width: var(--page-wide-width);
+  }
 }

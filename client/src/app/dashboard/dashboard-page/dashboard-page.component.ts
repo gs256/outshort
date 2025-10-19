@@ -12,6 +12,7 @@ import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { getResolvedUser } from '../../utils/get-resolved-user';
+import { PageContentWrapperComponent } from '../../page-content-wrapper/page-content-wrapper.component';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -24,6 +25,7 @@ import { getResolvedUser } from '../../utils/get-resolved-user';
     MenuModule,
     MenubarModule,
     RouterOutlet,
+    PageContentWrapperComponent,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.css',

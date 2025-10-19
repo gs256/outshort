@@ -4,10 +4,16 @@ import { MenubarComponent } from '../menubar/menubar.component';
 import { CardModule } from 'primeng/card';
 import { UserStore } from '../store/user.store';
 import { Router } from '@angular/router';
+import { PageContentWrapperComponent } from '../page-content-wrapper/page-content-wrapper.component';
 
 @Component({
   selector: 'app-user-page',
-  imports: [PageWrapperComponent, MenubarComponent, CardModule],
+  imports: [
+    PageWrapperComponent,
+    MenubarComponent,
+    CardModule,
+    PageContentWrapperComponent,
+  ],
   templateUrl: './user-page.component.html',
   styleUrl: './user-page.component.css',
 })

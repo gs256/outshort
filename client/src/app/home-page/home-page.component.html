@@ -1,132 +1,134 @@
 <app-page-wrapper>
   <app-menubar></app-menubar>
-  <p-card header="Welcome to Outshort!" class="intro-card">
-    <p class="m-0">
-      Outshort is a simple, open-source, self-hosted URL shortener that makes
-      long links short, clean, and easy to share. Customize links, track clicks,
-      and stay in control of your data!
-    </p>
-    <ng-template #footer>
-      @if (user() === undefined) {
-        <div class="flex items-center gap-4 mt-1 text-muted-color">
-          <p-button label="Sign up" (onClick)="navigateAuth()" />
-          <span>Sign up and manage your links</span>
-        </div>
-      } @else {
-        <div class="flex items-center gap-4 mt-1 text-muted-color">
-          <p-button
-            label="Dashboard"
-            outlined
-            (onClick)="navigateDashboard()"
-          />
-          <span>Full control over your links</span>
-        </div>
-      }
-    </ng-template>
-  </p-card>
-  <p-card header="Quick shorten">
-    <ng-template #subtitle>Enter your long link below</ng-template>
-    <div>
-      <div class="flex flex-row gap-2 mt-1">
-        <input
-          pInputText
-          [(ngModel)]="originalUrl"
-          placeholder="https://example.com"
-        />
-        <p-button
-          icon="pi pi-reply"
-          severity="warn"
-          label="Shorten"
-          (onClick)="onShortenClicked()"
-          [disabled]="processing() || originalUrl().length === 0"
-        ></p-button>
-      </div>
-    </div>
-    <p-selectbutton
-      [options]="lifetimeOptions"
-      optionLabel="label"
-      optionValue="value"
-      aria-labelledby="basic"
-      class="pt-3"
-      [(ngModel)]="quickLinkLifetime"
-    />
-    <ng-template #footer>
-      @if (user() !== undefined) {
-        <div class="pt-2">
-          <span class="text-secondary-text">
-            Links generated via <strong>Quick shorten</strong> won't be added to
-            your account. Consider managing links in the
-            <a [routerLink]="'/app/dashboard'" class="underline text-primary">
-              dashboard</a
-            >
-            instead
-          </span>
-        </div>
-      }
-    </ng-template>
-  </p-card>
-
-  @if (shortened()) {
-    <p-card header="Short link" class="relative">
-      @if (!shortened()) {
-        <div
-          class="bg-white/75 dark:bg-surface-800/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
-        ></div>
-      }
-      <p-tabs value="0">
-        <p-tablist>
-          <p-tab value="0">Last</p-tab>
-          <p-tab value="1">History</p-tab>
-        </p-tablist>
-        <p-tabpanels class="p-5">
-          <p-tabpanel value="0" class="p-0 m-0">
-            <p class="m-0 text-secondary text-muted-color">
-              Here's your short link. You can share it anywhere.
-            </p>
-            <div class="flex flex-row gap-2 mt-3">
-              <input
-                pInputText
-                [(ngModel)]="shortLink"
-                [readOnly]="true"
-                [disabled]="!shortened()"
-              />
-
-              <p-toast />
-              <p-button
-                icon="pi pi-clone"
-                severity="success"
-                label="Copy"
-                (onClick)="copyShortLink()"
-                [disabled]="!shortened()"
-              ></p-button>
-            </div>
-          </p-tabpanel>
-          <p-tabpanel value="1">
-            <p-table [value]="history()">
-              <ng-template #header>
-                <tr>
-                  <th>Original</th>
-                  <th>Short</th>
-                </tr>
-              </ng-template>
-              <ng-template #body let-record>
-                @let original = record.original;
-                @let short = getShortUrl(record.alias);
-                <tr>
-                  <td>
-                    <a [href]="original">{{ original }}</a>
-                  </td>
-                  <td>
-                    <a [href]="short">{{ short }}</a>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </p-tabpanel>
-        </p-tabpanels>
-      </p-tabs>
+  <app-page-content-wrapper variant="narrow" customClass="gap-4">
+    <p-card header="Welcome to Outshort!" class="intro-card">
+      <p class="m-0">
+        Outshort is a simple, open-source, self-hosted URL shortener that makes
+        long links short, clean, and easy to share. Customize links, track
+        clicks, and stay in control of your data!
+      </p>
+      <ng-template #footer>
+        @if (user() === undefined) {
+          <div class="flex items-center gap-4 mt-1 text-muted-color">
+            <p-button label="Sign up" (onClick)="navigateAuth()" />
+            <span>Sign up and manage your links</span>
+          </div>
+        } @else {
+          <div class="flex items-center gap-4 mt-1 text-muted-color">
+            <p-button
+              label="Dashboard"
+              outlined
+              (onClick)="navigateDashboard()"
+            />
+            <span>Full control over your links</span>
+          </div>
+        }
+      </ng-template>
     </p-card>
-  }
+    <p-card header="Quick shorten">
+      <ng-template #subtitle>Enter your long link below</ng-template>
+      <div>
+        <div class="flex flex-row gap-2 mt-1">
+          <input
+            pInputText
+            [(ngModel)]="originalUrl"
+            placeholder="https://example.com"
+          />
+          <p-button
+            icon="pi pi-reply"
+            severity="warn"
+            label="Shorten"
+            (onClick)="onShortenClicked()"
+            [disabled]="processing() || originalUrl().length === 0"
+          ></p-button>
+        </div>
+      </div>
+      <p-selectbutton
+        [options]="lifetimeOptions"
+        optionLabel="label"
+        optionValue="value"
+        aria-labelledby="basic"
+        class="pt-3"
+        [(ngModel)]="quickLinkLifetime"
+      />
+      <ng-template #footer>
+        @if (user() !== undefined) {
+          <div class="pt-2">
+            <span class="text-secondary-text">
+              Links generated via <strong>Quick shorten</strong> won't be added
+              to your account. Consider managing links in the
+              <a [routerLink]="'/app/dashboard'" class="underline text-primary">
+                dashboard</a
+              >
+              instead
+            </span>
+          </div>
+        }
+      </ng-template>
+    </p-card>
+
+    @if (shortened()) {
+      <p-card header="Short link" class="relative">
+        @if (!shortened()) {
+          <div
+            class="bg-white/75 dark:bg-surface-800/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
+          ></div>
+        }
+        <p-tabs value="0">
+          <p-tablist>
+            <p-tab value="0">Last</p-tab>
+            <p-tab value="1">History</p-tab>
+          </p-tablist>
+          <p-tabpanels class="p-5">
+            <p-tabpanel value="0" class="p-0 m-0">
+              <p class="m-0 text-secondary text-muted-color">
+                Here's your short link. You can share it anywhere.
+              </p>
+              <div class="flex flex-row gap-2 mt-3">
+                <input
+                  pInputText
+                  [(ngModel)]="shortLink"
+                  [readOnly]="true"
+                  [disabled]="!shortened()"
+                />
+
+                <p-toast />
+                <p-button
+                  icon="pi pi-clone"
+                  severity="success"
+                  label="Copy"
+                  (onClick)="copyShortLink()"
+                  [disabled]="!shortened()"
+                ></p-button>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <p-table [value]="history()">
+                <ng-template #header>
+                  <tr>
+                    <th>Original</th>
+                    <th>Short</th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-record>
+                  @let original = record.original;
+                  @let short = getShortUrl(record.alias);
+                  <tr>
+                    <td>
+                      <a [href]="original">{{ original }}</a>
+                    </td>
+                    <td>
+                      <a [href]="short">{{ short }}</a>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </p-card>
+    }
+  </app-page-content-wrapper>
 </app-page-wrapper>
 
 <p-toast position="top-center" />

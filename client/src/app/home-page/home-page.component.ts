@@ -18,6 +18,7 @@ import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
 import { UserStore } from '../store/user.store';
 import { getShortUrl } from '../utils';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { PageContentWrapperComponent } from '../page-content-wrapper/page-content-wrapper.component';
 
 @Component({
   selector: 'app-home-page',
@@ -35,6 +36,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     PageWrapperComponent,
     RouterLink,
     SelectButtonModule,
+    PageContentWrapperComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
