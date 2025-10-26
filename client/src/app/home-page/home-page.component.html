@@ -39,7 +39,7 @@
             severity="warn"
             label="Shorten"
             (onClick)="onShortenClicked()"
-            [disabled]="processing() || originalUrl().length === 0"
+            [disabled]="isLoadgin() || originalUrl().length === 0"
           ></p-button>
         </div>
       </div>
@@ -74,58 +74,25 @@
             class="bg-white/75 dark:bg-surface-800/75 absolute top-0 left-0 w-full h-full z-10 rounded-xl"
           ></div>
         }
-        <p-tabs value="0">
-          <p-tablist>
-            <p-tab value="0">Last</p-tab>
-            <p-tab value="1">History</p-tab>
-          </p-tablist>
-          <p-tabpanels class="p-5">
-            <p-tabpanel value="0" class="p-0 m-0">
-              <p class="m-0 text-secondary text-muted-color">
-                Here's your short link. You can share it anywhere.
-              </p>
-              <div class="flex flex-row gap-2 mt-3">
-                <input
-                  pInputText
-                  [(ngModel)]="shortLink"
-                  [readOnly]="true"
-                  [disabled]="!shortened()"
-                />
 
-                <p-toast />
-                <p-button
-                  icon="pi pi-clone"
-                  severity="success"
-                  label="Copy"
-                  (onClick)="copyShortLink()"
-                  [disabled]="!shortened()"
-                ></p-button>
-              </div>
-            </p-tabpanel>
-            <p-tabpanel value="1">
-              <p-table [value]="history()">
-                <ng-template #header>
-                  <tr>
-                    <th>Original</th>
-                    <th>Short</th>
-                  </tr>
-                </ng-template>
-                <ng-template #body let-record>
-                  @let original = record.original;
-                  @let short = getShortUrl(record.alias);
-                  <tr>
-                    <td>
-                      <a [href]="original">{{ original }}</a>
-                    </td>
-                    <td>
-                      <a [href]="short">{{ short }}</a>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </p-tabpanel>
-          </p-tabpanels>
-        </p-tabs>
+        <p class="m-0 text-secondary text-muted-color">
+          Here's your short link. You can share it anywhere.
+        </p>
+        <div class="flex flex-row gap-2 mt-3">
+          <input
+            pInputText
+            [(ngModel)]="shortLink"
+            [readOnly]="true"
+            [disabled]="!shortened()"
+          />
+          <p-button
+            icon="pi pi-clone"
+            severity="success"
+            label="Copy"
+            (onClick)="copyShortLink()"
+            [disabled]="!shortened()"
+          ></p-button>
+        </div>
       </p-card>
     }
   </app-page-content-wrapper>
