@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ApiService } from '../services/api/api.service';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MenubarModule } from 'primeng/menubar';
@@ -11,7 +10,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastModule } from 'primeng/toast';
 import { Router, RouterLink } from '@angular/router';
-import { ShortLinkHistoryService } from './services/short-link-history.service';
 import { TableModule } from 'primeng/table';
 import { MenubarComponent } from '../menubar/menubar.component';
 import { PageWrapperComponent } from '../page-wrapper/page-wrapper.component';
@@ -19,6 +17,7 @@ import { UserStore } from '../store/user.store';
 import { getShortUrl } from '../utils';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { PageContentWrapperComponent } from '../page-content-wrapper/page-content-wrapper.component';
+import { QuickLinksStore } from '../store/quick-links.store';
 
 @Component({
   selector: 'app-home-page',
@@ -43,19 +42,17 @@ import { PageContentWrapperComponent } from '../page-content-wrapper/page-conten
   providers: [MessageService],
 })
 export class HomePageComponent {
-  private readonly _api = inject(ApiService);
   private readonly _clipboard = inject(Clipboard);
   private readonly _messageService = inject(MessageService);
-  private readonly _historyService = inject(ShortLinkHistoryService);
   private readonly _router = inject(Router);
   private readonly _userStore = inject(UserStore);
   private readonly _message = inject(MessageService);
+  private readonly _store = inject(QuickLinksStore);
 
-  public readonly processing = signal(false);
-  public readonly shortLink = signal('');
+  public readonly isLoadgin = this._store.isLoading;
+  public readonly shortLink = this._store.link;
   public readonly originalUrl = signal('');
   public readonly quickLinkLifetime = signal('1h');
-  public readonly history = this._historyService.records;
   public readonly user = this._userStore.user;
   public readonly getShortUrl = getShortUrl;
 
@@ -65,44 +62,35 @@ export class HomePageComponent {
     { label: '1 week', value: '1w' },
   ];
 
-  public readonly shortened = computed(
-    () => this.shortLink().trim().length > 0,
-  );
+  public readonly shortened = computed(() => this.shortLink() !== null);
 
-  public onShortenClicked() {
-    if (this.processing()) {
+  public async onShortenClicked() {
+    if (this.isLoadgin()) {
       return;
     }
     const originalUrl = this.originalUrl().trim();
     if (originalUrl.length == 0) {
       return;
     }
-    this.processing.set(true);
-    this._api.quickShorten(this.originalUrl()).subscribe({
-      next: (alias) => {
-        this.shortLink.set(getShortUrl(alias));
-        this._historyService.add(originalUrl, alias);
-        this.processing.set(false);
-      },
-      error: (error: Error) => {
-        this._message.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Invalid url',
-        });
-        this.processing.set(false);
-      },
-    });
+    const alias = await this._store.shorten(this.originalUrl());
+    if (alias === null) {
+      this._message.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Invalid url',
+      });
+    }
   }
 
   public copyShortLink() {
-    if (this.shortLink().length === 0) {
+    const shortLink = this.shortLink();
+    if (!shortLink) {
       return;
     }
-    this._clipboard.copy(this.shortLink());
+    this._clipboard.copy(shortLink);
     this._messageService.add({
       summary: 'Copied to clipboard',
-      detail: this.shortLink(),
+      detail: shortLink,
       severity: 'success',
     });
   }
